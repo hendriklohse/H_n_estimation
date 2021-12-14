@@ -53,6 +53,6 @@ def run_all(n, nruns, ple):
 	print(estimates_dict)
 	return estimates_dict
 
-run_all(n=1000000, nruns=2000000, ple=2.5)
+run_all(n=200000, nruns=100000, ple=2.7)
 
 # create_girg_(n=50000, d=1, ple=2.5, alpha="inf", deg=10, wseed=12, pseed=130, sseed=1400, threads=1, file="graph_" + str(50000), dot=0, edge=1)
