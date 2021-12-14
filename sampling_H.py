@@ -3,21 +3,21 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 import numpy as np
-from calculate_gamma_faster import H_n
-from scipy.stats import zipf
+from calculate_H import H_n
+from scipy.stats import zipf, pareto
 import scipy
+
 
 
 def sample_H(dist, nruns):
 	t1 = time.time()
-	res = dist.rvs(size=nruns)
+	# res = dist.rvs(size=nruns)
+	res = pareto.rvs(2.5, size=nruns)
+
 	samples = sorted(Counter(res).items())
 	t2 = time.time()
 	print("time elapsed to sample " + str(nruns) + " times from H_n(k): " + str(t2 - t1))
 	return samples #list of tuples
-
-
-# sam = sample_H(H_n_real,100000)
 
 
 # n = 200000
@@ -59,12 +59,12 @@ def sample_H(dist, nruns):
 # plt.title("sampled CDF of H_n for " + str(n) + " nodes")
 # plt.savefig('./Figures/sampled_H_n_CDF' + str(n) + "n" + str(nruns) + "nruns")
 # plt.show()
-
+#
 # plt.plot(ccdf_samples)
 # plt.yscale('log')
 # plt.xscale('log')
-# plt.title('sampled CCDF of H_n for ' + str(n) + ' nodes')
-# plt.savefig('./Figures/sampled_H_n_CCDF_loglog' + str(n) + "n" + str(nruns) + "nruns")
+# plt.title('sampled loglog CCDF of H_n cut to n^(1/ple)/2 with ' + str(n) + ' nodes')
+# plt.savefig('./Figures/sampled_H_n_CCDF_loglog_cut_' + str(n) + "n" + str(nruns) + "nruns")
 # plt.show()
 
 #
