@@ -82,6 +82,14 @@ def get_ccdf(degree_sequence):
     """
     uniques, counts = np.unique(degree_sequence, return_counts=True)
     cumprob = np.cumsum(counts).astype(np.double) / (degree_sequence.size)
+    # plot ccdf
+    x_ccdf, y_ccdf = uniques[::-1], (1. - cumprob)[::-1]
+    plt.xlabel(r"Degree $k$", fontsize = 20)
+    plt.ylabel(r"$\bar{F}(k)$", fontsize = 20)
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.step(x_ccdf, y_ccdf, color = "#386cb0", lw = 1.5)
+    plt.show()
     return uniques[::-1], (1. - cumprob)[::-1]
     
 # ================================================

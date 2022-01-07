@@ -12,21 +12,41 @@ ax1.plot(data[:,0], data[:,1])
 ax1.set_title('CAIDA_KONECT')
 ax1.set_yscale('log')
 ax1.set_xscale('log')
+ax1.set(xlim=(1, 10**4), ylim=(1, 10**5))
 ax1.grid(True)
 
-data = np.loadtxt('./output/cut/girg_1D_1000000n_2000000nruns_2.5ple.dat')
+# data = np.loadtxt('./output/k-1/girg_1D_200000n_100000nruns_2.5ple_cut_372.dat')
+# ax2.plot(data[:,0], data[:,1])
+# ax2.set_title('girg_200000n+100000nruns cut to 0.8*limit')
+# ax2.set_yscale('log')
+# ax2.set_xscale('log')
+# ax2.set(xlim=(1, 10**4), ylim=(1, 10**5))
+# ax2.grid(True)
+
+data = np.loadtxt('./output/k-2/girg_1D_200000n_100000nruns_2.5ple_cut_372.dat')
 ax2.plot(data[:,0], data[:,1])
-ax2.set_title('girg_1Mn_2Mnruns_cut')
+ax2.set_title('k-2 girg_200000n+100000nruns cut to 0.8*limit')
 ax2.set_yscale('log')
 ax2.set_xscale('log')
+ax2.set(xlim=(1, 10**4), ylim=(1, 10**5))
 ax2.grid(True)
 
-data = np.loadtxt('./output/girg_1D_1000000n_500000nruns_2.5ple.dat')
+data = np.loadtxt('./output/k-1/girg_1D_200000n_100000nruns_2.5ple.dat')
 ax3.plot(data[:,0], data[:,1])
-ax3.set_title('girg_1Mn_500k_nruns')
+ax3.set_title('girg_200000n+100000nruns uncut')
 ax3.set_yscale('log')
 ax3.set_xscale('log')
+ax3.set(xlim=(1, 10**4), ylim=(1, 10**5))
 ax3.grid(True)
+
+
+data = np.loadtxt('./output/k-1_zipf_ple25.dat')
+ax4.plot(data[:,0], data[:,1])
+ax4.set_title('zipf ple2.5')
+ax4.set_yscale('log')
+ax4.set_xscale('log')
+ax4.set(xlim=(1, 10**4), ylim=(1, 10**5))
+ax4.grid(True)
 
 fig.tight_layout(pad=3.0)
 
@@ -76,4 +96,5 @@ from scipy import stats
 # print(z)
 # x = np.ediff1d(z, to_begin=z[0])
 # print(x)
+
 

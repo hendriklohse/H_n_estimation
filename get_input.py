@@ -10,7 +10,3 @@ def create_girg_(n, d, ple, alpha, deg, wseed, pseed, sseed, threads, file, dot,
 
 def get_input(inputFile: str):
 	shutil.copy2("./girgs/build/files/" + inputFile, "./input/")
-
-
-create_girg_(n=20, d=1, ple=2.5, alpha="inf", deg=10, wseed=12, pseed=130, sseed=1400, threads=1, file="graph_" + str(20), dot=0, edge=1)
-get_input("graph_20.txt")

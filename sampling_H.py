@@ -3,7 +3,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 import numpy as np
-from calculate_H import H_n
+# from calculate_H import H_n
 from scipy.stats import zipf, pareto
 import scipy
 
@@ -14,9 +14,28 @@ def sample_H(dist, nruns):
 	# TEST WITH PARETO DISTRIBUTION, works.
 	# res = pareto.rvs(2.5, size=nruns)
 
+	# TEST WITH ZIPF DISTRIBUTION, works.
+	# res = zipf.rvs(2.5, size=nruns)
+
 	samples = sorted(Counter(res).items())
 	t2 = time.time()
 	print("time elapsed to sample " + str(nruns) + " times from H_n(k): " + str(t2 - t1))
+
+	# CALCULATE CDF
+	cusum = np.cumsum(list(zip(*samples))[1])
+	cdf_samples = cusum / cusum[-1]
+
+	# CALCULATE CCDF
+	ccdf_samples = [1-elt for elt in cdf_samples]
+
+	# PLOT SAMPLED CCDF LOGLOG
+	plt.plot(ccdf_samples)
+	plt.yscale('log')
+	plt.xscale('log')
+	plt.title('sampled loglog CCDF of H_n')
+	plt.savefig('./Figures/k-1/CDFsampled_H_n_CCDF_loglog_')
+	plt.show()
+
 	return samples #list of tuples
 
 # RUN SAMPLING BASED ON SCIPY.STATS DISCRETE DISTRIBUTION H_n FROM calculate_H

@@ -5,7 +5,8 @@ import time
 import networkx as nx
 import numpy as np
 from matplotlib import pyplot as plt
-
+from scipy.stats import zipf
+from collections import Counter
 
 def makeEdgeFile(edgeFile):
 	"""Deletes first row from edge file"""
@@ -53,3 +54,16 @@ def localClusteringCoefficient(graph):
 	print("time to calculate loc clus coef: " + str(t2 - t1))
 	return loc_clustering_dict
 
+def zipfClustering(a, n):
+	res = zipf.rvs(a, size=n) #a is pmf coefficient
+	samples = sorted(Counter(res).items()) #list of tuples
+	dic = dict()
+	dic[0] = 0.0
+	dic[1] = 0.0
+	for key, value in samples:
+		key = key + 1
+		dic[key] = value / n
+	# print(dic)
+	return dic
+
+# zipfClustering(2.5, 100000)
