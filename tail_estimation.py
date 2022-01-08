@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 # ========== Auxiliary Functions ==========
 # =========================================
 
-res_dict = {"hill_ple": None, "moments_ple": None, "kernel_ple": None}
+
 
 def add_uniform_noise(data_sequence, p = 1):
     """
@@ -377,6 +377,7 @@ def hill_estimator(ordered_data,
         xi_star = xi_arr[k_star-1]
         hill_ple = 1./xi_star - 1
         res_dict["hill_ple"] = hill_ple
+        # print(res_dict)
         print("Adjusted Hill estimated gamma:", 1./xi_star - 1)
         print("**********")
     else:
@@ -674,6 +675,7 @@ def moments_estimator(ordered_data,
         else:
             moments_ple = 1./xi_star - 1
             res_dict["moments_ple"] = moments_ple
+            # print(res_dict)
             print ("Moments estimated gamma:", 1./xi_star - 1)
         print("**********")
     else:
@@ -1007,6 +1009,7 @@ def kernel_type_estimator(ordered_data, hsteps, alpha = 0.6,
         else:
             kernel_ple = 1./xi_star - 1
             res_dict["kernel_ple"] = kernel_ple
+            # print(res_dict)
             print ("Kernel-type estimated gamma:", 1./xi_star - 1)
         print("**********")
     else:
@@ -1096,6 +1099,10 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         p_noise:          integer parameter controlling noise amplitude.
         savedata:         Flag to save data files in the directory with plots.
     """
+
+    global res_dict
+    res_dict = {"hill_ple": None, "moments_ple": None, "kernel_ple": None}
+
     output_dir = os.path.dirname(os.path.realpath(output_file_path))
     output_name = os.path.splitext(os.path.basename(output_file_path))[0]
     # calculate log-binned PDF
@@ -1632,6 +1639,8 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
 
     fig.tight_layout(pad = 0.2)
     fig.savefig(output_file_path)
+    np.save('./result_dicts/res_dict.npy', res_dict)
+    print('res_dict is printed')
 
 # ==========================
 # ========== Main ==========
@@ -1830,7 +1839,7 @@ def main():
                r_bootstrap, diagnostic_plots_flag, eps_stop, 
                args.theta1, args.theta2, verbose, noise_flag,
                p_noise, args.savedata)
-    np.save('./result_dicts/res_dict.npy', res_dict)
+    # np.save('./result_dicts/res_dict.npy', res_dict)
 
 if __name__ == '__main__':
     

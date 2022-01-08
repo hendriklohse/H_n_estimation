@@ -1,6 +1,9 @@
 import os
 import numpy as np
 # from get_input import inputMaker
+from subprocess import Popen, PIPE
+
+import tail_estimation
 
 
 def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, testing):
@@ -14,11 +17,23 @@ def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, testing):
 		# + '--pnoise 1' + ' --noise 1'
 		command = 'python tail_estimation.py ./output/k-3/' + outputFile + ' ./plots/k-3/' + plotFile
 		os.system(command)
+		# print('end os.system(command)')
 		stream = os.popen(command)
-		output = stream.read()
-		print(output)
+		# print('end os.popen(command)')
+		# output = stream.read()
+		# print('end stream.read()')
+		# print(output)
+
+		# stdout = Popen(command, shell=True, stdout=PIPE).stdout
+		# output = stdout.read()
+		# print(output)
+		# print(type(output))
+
+		print('output printed, now loading res_dict')
 		res_dict_read = np.load('./result_dicts/res_dict.npy', allow_pickle=True).item()
+		print(type(res_dict_read))
 		return res_dict_read
+
 	elif testing == 0:
 		with open('./output/' + "realClusteringFunction_alpha0.8_nu1_samples.dat", 'w') as f:
 			for duo in sample:
