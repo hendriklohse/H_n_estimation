@@ -34,8 +34,6 @@ def sample_from_CDF(cdf_list, nruns):
 	samples.insert(0,(1,0))
 	samples.insert(0,(0,0))
 	# print(samples)
-	# DELETE LAST VALUE FROM SAMPLES
-	del samples[-1]
 
 	t2 = time.time()
 	print("time elapsed to sample " + str(nruns) + " times from CDF of H_n(k): " + str(t2 - t1))
@@ -46,12 +44,12 @@ def sample_from_CDF(cdf_list, nruns):
 	ccdf_samples = [1-elt for elt in cdf_samples]
 
 	# PLOT SAMPLED CCDF LOGLOG
-	plt.plot(ccdf_samples)
-	plt.yscale('log')
-	plt.xscale('log')
-	plt.title('sampled loglog CCDF of H_n cut to n^(1/ple)')
-	plt.savefig('./Figures/k-1/CDFsampled_H_n_CCDF_loglog')
-	plt.show()
+	# plt.plot(ccdf_samples)
+	# plt.yscale('log')
+	# plt.xscale('log')
+	# plt.title('sampled loglog CCDF of H_n')
+	# plt.savefig('./Figures/k-1/CDFsampled_H_n_CCDF_loglog')
+	# plt.show()
 
 	return samples
 

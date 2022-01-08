@@ -29,12 +29,12 @@ def sample_H(dist, nruns):
 	ccdf_samples = [1-elt for elt in cdf_samples]
 
 	# PLOT SAMPLED CCDF LOGLOG
-	plt.plot(ccdf_samples)
-	plt.yscale('log')
-	plt.xscale('log')
-	plt.title('sampled loglog CCDF of H_n')
-	plt.savefig('./Figures/k-1/CDFsampled_H_n_CCDF_loglog_')
-	plt.show()
+	# plt.plot(ccdf_samples)
+	# plt.yscale('log')
+	# plt.xscale('log')
+	# plt.title('sampled loglog CCDF of H_n')
+	# plt.savefig('./Figures/k-1/CDFsampled_H_n_CCDF_loglog_')
+	# plt.show()
 
 	return samples #list of tuples
 

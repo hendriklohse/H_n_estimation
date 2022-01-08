@@ -52,15 +52,15 @@ def CDF(clusDict, k_c):
 	cusum = np.cumsum(pmf)
 	cdf_list = cusum / cusum[-1]
 
-	plt.plot(cdf_list)
-	plt.title("normal cdf")
-	plt.show()
-
-	plt.plot(cdf_list)
-	plt.yscale('log')
-	plt.xscale('log')
-	plt.title("loglog cdf")
-	plt.show()
+	# plt.plot(cdf_list)
+	# plt.title("normal cdf")
+	# plt.show()
+	#
+	# plt.plot(cdf_list)
+	# plt.yscale('log')
+	# plt.xscale('log')
+	# plt.title("loglog cdf")
+	# plt.show()
 
 	return cdf_list
 

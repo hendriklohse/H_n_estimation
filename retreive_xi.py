@@ -8,7 +8,7 @@ import tail_estimation
 
 def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, testing):
 	if testing == 1:
-		outputFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple" + "_cut_" + str(k_c) + ".dat"
+		outputFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple" + ".dat"
 		#print('/output/' + outputFile)
 		plotFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple" + ".pdf"
 		with open('./output/k-3/' + outputFile, 'w') as f:
@@ -18,7 +18,7 @@ def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, testing):
 		command = 'python tail_estimation.py ./output/k-3/' + outputFile + ' ./plots/k-3/' + plotFile
 		os.system(command)
 		# print('end os.system(command)')
-		stream = os.popen(command)
+		# stream = os.popen(command)
 		# print('end os.popen(command)')
 		# output = stream.read()
 		# print('end stream.read()')
@@ -29,9 +29,9 @@ def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, testing):
 		# print(output)
 		# print(type(output))
 
-		print('output printed, now loading res_dict')
+		# print('output printed, now loading res_dict')
 		res_dict_read = np.load('./result_dicts/res_dict.npy', allow_pickle=True).item()
-		print(type(res_dict_read))
+		# print(type(res_dict_read))
 		return res_dict_read
 
 	elif testing == 0:

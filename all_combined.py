@@ -54,11 +54,12 @@ def run_all(n, nruns, ple):
 
 	estimates_dict = run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c, testing=1)
 
-	print(estimates_dict)
+	# print(estimates_dict)
 	for key, value in estimates_dict.items():
 		estimates_dict[key] = abs(value - ple) if value != None else None
 	# get_estimates(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_)
-	print(estimates_dict)
+	# print(estimates_dict)
+
 	return estimates_dict
 
 run_all(n=100000, nruns=100000, ple=2.5)

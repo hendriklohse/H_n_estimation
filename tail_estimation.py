@@ -84,12 +84,12 @@ def get_ccdf(degree_sequence):
     cumprob = np.cumsum(counts).astype(np.double) / (degree_sequence.size)
     # plot ccdf
     x_ccdf, y_ccdf = uniques[::-1], (1. - cumprob)[::-1]
-    plt.xlabel(r"Degree $k$", fontsize = 20)
-    plt.ylabel(r"$\bar{F}(k)$", fontsize = 20)
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.step(x_ccdf, y_ccdf, color = "#386cb0", lw = 1.5)
-    plt.show()
+    # plt.xlabel(r"Degree $k$", fontsize = 20)
+    # plt.ylabel(r"$\bar{F}(k)$", fontsize = 20)
+    # plt.xscale("log")
+    # plt.yscale("log")
+    # plt.step(x_ccdf, y_ccdf, color = "#386cb0", lw = 1.5)
+    # plt.show()
     return uniques[::-1], (1. - cumprob)[::-1]
     
 # ================================================
@@ -1640,7 +1640,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     fig.tight_layout(pad = 0.2)
     fig.savefig(output_file_path)
     np.save('./result_dicts/res_dict.npy', res_dict)
-    print('res_dict is printed')
+    # print('res_dict is printed')
 
 # ==========================
 # ========== Main ==========
