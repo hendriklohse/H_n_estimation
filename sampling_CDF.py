@@ -1,7 +1,7 @@
 import numpy as np
 from collections import Counter
 import time
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # from scipy.stats import zipf
 # import scipy
 # from calculate_H import H_n_list, n
@@ -44,12 +44,12 @@ def sample_from_CDF(cdf_list, nruns):
 	ccdf_samples = [1-elt for elt in cdf_samples]
 
 	# PLOT SAMPLED CCDF LOGLOG
-	# plt.plot(ccdf_samples)
-	# plt.yscale('log')
-	# plt.xscale('log')
-	# plt.title('sampled loglog CCDF of H_n')
-	# plt.savefig('./Figures/k-1/CDFsampled_H_n_CCDF_loglog')
-	# plt.show()
+	plt.plot(ccdf_samples)
+	plt.yscale('log')
+	plt.xscale('log')
+	plt.title('sampled loglog CCDF of H_n')
+	plt.savefig('./Figures/CDFsampled_H_n_CCDF_loglog')
+	plt.show()
 
 	return samples
 

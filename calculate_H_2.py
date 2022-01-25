@@ -5,12 +5,11 @@ import numpy as np
 # from get_input import get_input, create_girg_
 # from create_girg import generate_graph, localClusteringCoefficient, zipfClustering
 
-
 def c_n_sum_(clusDict, limit):
 	c_n_sum = 0
 	for i in range(2, limit + 1):
 		if clusDict.get(i):
-			c_n_sum += i ** (-1) * clusDict[i]
+			c_n_sum += i ** (-3) * clusDict[i]
 	return c_n_sum
 
 

@@ -57,6 +57,7 @@ def run_all(n, nruns, ple, bigLocClus):
 	if bigLocClus.get(n):
 		locClus = bigLocClus[n]
 		k_c = int(n**(1/ple))
+		k_c = len(locClus.keys())
 		print(k_c)
 		H_n_CDF = CDF(clusDict=locClus, k_c=k_c)
 		#
