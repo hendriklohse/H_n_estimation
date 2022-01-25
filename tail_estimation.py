@@ -84,13 +84,15 @@ def get_ccdf(degree_sequence):
     cumprob = np.cumsum(counts).astype(np.double) / (degree_sequence.size)
     # plot ccdf
     x_ccdf, y_ccdf = uniques[::-1], (1. - cumprob)[::-1]
+
     # plt.xlabel(r"Degree $k$", fontsize = 20)
     # plt.ylabel(r"$\bar{F}(k)$", fontsize = 20)
     # plt.xscale("log")
     # plt.yscale("log")
     # plt.step(x_ccdf, y_ccdf, color = "#386cb0", lw = 1.5)
     # plt.show()
-    return uniques[::-1], (1. - cumprob)[::-1]
+    return x_ccdf, y_ccdf
+    # return uniques[::-1], (1. - cumprob)[::-1]
     
 # ================================================
 # ========== Hill Tail Index Estimation ==========
@@ -375,10 +377,10 @@ def hill_estimator(ordered_data,
                            eps_stop = eps_stop)
             k_star, x1_arr, n1_amse, k1, max_index1, x2_arr, n2_amse, k2, max_index2 = results
         xi_star = xi_arr[k_star-1]
-        hill_ple = 1./xi_star - 1
+        hill_ple = 1./xi_star - 2
         res_dict["hill_ple"] = hill_ple
         # print(res_dict)
-        print("Adjusted Hill estimated gamma:", 1./xi_star - 1)
+        print("Adjusted Hill estimated eta:", 1./xi_star - 2)
         print("**********")
     else:
         k_star, xi_star = None, None
@@ -671,12 +673,12 @@ def moments_estimator(ordered_data,
         k_star, x1_arr, n1_amse, k1, max_index1, x2_arr, n2_amse, k2, max_index2 = results
         xi_star = xi_arr[k_star-1]
         if xi_star <= 0:
-            print ("Moments estimated gamma: infinity (xi <= 0).")
+            print ("Moments estimated eta: infinity (xi <= 0).")
         else:
-            moments_ple = 1./xi_star - 1
+            moments_ple = 1./xi_star - 2
             res_dict["moments_ple"] = moments_ple
             # print(res_dict)
-            print ("Moments estimated gamma:", 1./xi_star - 1)
+            print ("Moments estimated eta:", 1./xi_star - 2)
         print("**********")
     else:
         k_star, xi_star = None, None
@@ -1005,12 +1007,12 @@ def kernel_type_estimator(ordered_data, hsteps, alpha = 0.6,
         k_star = int(np.floor(h_arr[k_star]*n))-1
         k_arr = np.floor((h_arr * n))
         if xi_star <= 0:
-            print ("Kernel-type estimated gamma: infinity (xi <= 0).")
+            print ("Kernel-type estimated eta: infinity (xi <= 0).")
         else:
-            kernel_ple = 1./xi_star - 1
+            kernel_ple = 1./xi_star - 2
             res_dict["kernel_ple"] = kernel_ple
             # print(res_dict)
-            print ("Kernel-type estimated gamma:", 1./xi_star - 1)
+            print ("Kernel-type estimated eta:", 1./xi_star - 2)
         print("**********")
     else:
         k_star, xi_star = None, None
@@ -1284,13 +1286,13 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         xmin = ordered_data[k_h_star]
     x = x_ccdf[np.where(x_ccdf >= xmin)]
     l = np.mean(y_ccdf[np.where(x == xmin)])
-    alpha = 1./xi_h_star
+    mu = 1./xi_h_star - 3 #CCDF exponent: mu = eta - 1
     if xi_h_star > 0:
-        axes[0,1].plot(x, [l*(float(xmin)/k)**alpha for k in x],
+        axes[0,1].plot(x, [l*(float(xmin)/k)**mu for k in x],
                        color = '#fb8072', ls = '--', lw = 2,
-                       label = r"Adj. Hill Scaling $(\alpha="+\
-                       str(np.round(1./xi_h_star, decimals = 3))+r")$")
-        axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(alpha)],
+                       label = r"Adj. Hill Scaling $(\mu="+\
+                       str(np.round(1./xi_h_star - 3, decimals = 3))+r")$")
+        axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(mu)],
                                    color = "#fb8072", ls = 'none', marker = 'o',
                                    markerfacecolor = 'none', markeredgecolor = "#fb8072",
                                    markeredgewidth = 3, markersize = 10)
@@ -1300,13 +1302,13 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         xmin = ordered_data[k_m_star]
     x = x_ccdf[np.where(x_ccdf >= xmin)]
     l = np.mean(y_ccdf[np.where(x == xmin)])
-    alpha = 1./xi_m_star
+    mu = 1./xi_m_star - 3
     if xi_m_star > 0:
-        axes[0,1].plot(x, [l*(float(xmin)/k)**alpha for k in x],
+        axes[0,1].plot(x, [l*(float(xmin)/k)**mu for k in x],
                        color = '#8dd3c7', ls = '--', lw = 2,
-                       label = r"Moments Scaling $(\alpha="+\
-                       str(np.round(1./xi_m_star, decimals = 3))+r")$")
-        axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(alpha)],
+                       label = r"Moments Scaling $(\mu="+\
+                       str(np.round(1./xi_m_star - 3, decimals = 3))+r")$")
+        axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(mu)],
                                    color = "#8dd3c7", ls = 'none', marker = 'o',
                                    markerfacecolor = 'none', markeredgecolor = "#8dd3c7",
                                    markeredgewidth = 3, markersize = 10)
@@ -1317,13 +1319,13 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     
     x = x_ccdf[np.where(x_ccdf >= xmin)]
     l = np.mean(y_ccdf[np.where(x == xmin)])
-    alpha = 1./xi_k_star
+    mu = 1./xi_k_star-3
     if xi_k_star > 0:
-        axes[0,1].plot(x, [l*(float(xmin)/k)**alpha for k in x],
+        axes[0,1].plot(x, [l*(float(xmin)/k)**mu for k in x],
                        color = '#fdb462', ls = '--', lw = 2,
-                       label = r"Kernel Scaling $(\alpha="+\
-                       str(np.round(1./xi_k_star, decimals = 3))+r")$")
-        axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(alpha)],
+                       label = r"Kernel Scaling $(\mu="+\
+                       str(np.round(1./xi_k_star - 3, decimals = 3))+r")$")
+        axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(mu)],
                                    color = "#8dd3c7", ls = 'none', marker = 'o',
                                    markerfacecolor = 'none', markeredgecolor = "#fdb462",
                                    markeredgewidth = 3, markersize = 10)

@@ -1,9 +1,9 @@
 import numpy as np
 from collections import Counter
 import time
-import matplotlib.pyplot as plt
-from scipy.stats import zipf
-import scipy
+# import matplotlib.pyplot as plt
+# from scipy.stats import zipf
+# import scipy
 # from calculate_H import H_n_list, n
 
 

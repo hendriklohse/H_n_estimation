@@ -1,9 +1,9 @@
 import numpy as np
-from scipy import stats
-import matplotlib.pyplot as plt
-
-from get_input import get_input, create_girg_
-from create_girg import generate_graph, localClusteringCoefficient, zipfClustering
+# from scipy import stats
+# import matplotlib.pyplot as plt
+#
+# from get_input import get_input, create_girg_
+# from create_girg import generate_graph, localClusteringCoefficient, zipfClustering
 
 
 def c_n_sum_(clusDict, limit):
@@ -47,7 +47,7 @@ def PMF(clusDict, k_c):
 	return pmf_list
 
 def CDF(clusDict, k_c):
-	print(k_c)
+	# print(k_c)
 	pmf = PMF(clusDict=clusDict, k_c=k_c)
 	cusum = np.cumsum(pmf)
 	cdf_list = cusum / cusum[-1]

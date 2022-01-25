@@ -1,9 +1,9 @@
 import os
 import numpy as np
 # from get_input import inputMaker
-from subprocess import Popen, PIPE
+# from subprocess import Popen, PIPE
 
-import tail_estimation
+# import tail_estimation
 
 
 def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, testing):

@@ -1,5 +1,4 @@
 from scipy.spatial.distance import pdist, squareform
-import time
 from matplotlib import pyplot as plt
 import time
 import networkx as nx
@@ -7,6 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.stats import zipf
 from collections import Counter
+from get_input import get_input, create_girg_
 
 def makeEdgeFile(edgeFile):
 	"""Deletes first row from edge file"""
@@ -32,16 +32,12 @@ def generate_graph(firstTime, edgeFile):
 
 def localClusteringCoefficient(graph):
 	t1 = time.time()
-	# print(graph.edges())
 	deg_tupleList = nx.degree(graph)
-	# print(nx.degree(graph))
 	deg_dict_ = dict((deg_tupleList))
 	deg_dict = deg_dict_
-	#print(deg_dict)
 	inv_deg_dict = {}
 	for k, v in deg_dict.items():
 		inv_deg_dict[v] = inv_deg_dict.get(v, []) + [k]
-	#print(inv_deg_dict)
 	loc_clustering_dict = {}
 	for key, value in inv_deg_dict.items():
 		total_clustering = 0
@@ -49,10 +45,20 @@ def localClusteringCoefficient(graph):
 			total_clustering += nx.clustering(graph, v)
 		avg_clustering = total_clustering / len(value)
 		loc_clustering_dict[key] = avg_clustering
-	# print(loc_clustering_dict)
 	t2 = time.time()
 	print("time to calculate loc clus coef: " + str(t2 - t1))
+	# np.save('./clusteringCoefficients/big_clusDict.npy', big_clusDict)
 	return loc_clustering_dict
+
+def makeBigClus(n_list, ple):
+	big_clusDict = {}
+	for n in n_list:
+		create_girg_(n=str(n), d=1, ple=ple, alpha="inf", deg=10, wseed=12, pseed=130, sseed=1400, threads=1, file="graph_" + str(n), dot=0, edge=1)
+		get_input("graph_" + str(n) + ".txt")
+		girg = generate_graph(firstTime=True, edgeFile="./input/graph_" + str(n) + ".txt")
+		locClus = localClusteringCoefficient(girg)
+		big_clusDict[n] = locClus
+	return big_clusDict
 
 def zipfClustering(a, n):
 	res = zipf.rvs(a, size=n) #a is pmf coefficient
