@@ -50,13 +50,26 @@ def localClusteringCoefficient(graph):
 	# np.save('./clusteringCoefficients/big_clusDict.npy', big_clusDict)
 	return loc_clustering_dict
 
-def makeBigClus(n_list, ple):
+def makeBigClus(n_list, ple, nr_graphs):
 	big_clusDict = {}
 	for n in n_list:
-		create_girg_(n=str(n), d=1, ple=ple, alpha="inf", deg=10, wseed=12, pseed=130, sseed=1400, threads=1, file="graph_" + str(n), dot=0, edge=1)
-		get_input("graph_" + str(n) + ".txt")
-		girg = generate_graph(firstTime=True, edgeFile="./input/graph_" + str(n) + ".txt")
-		locClus = localClusteringCoefficient(girg)
+		locClus_sum = {i : 0.0 for i in range(n)}
+		for _ in range(nr_graphs):
+			create_girg_(n=str(n), d=1, ple=ple, alpha="inf", deg=10, wseed=12, pseed=130, sseed=1400, threads=1, file="graph_" + str(n), dot=0, edge=1)
+			get_input("graph_" + str(n) + ".txt")
+			girg = generate_graph(firstTime=True, edgeFile="./input/graph_" + str(n) + ".txt")
+			loc_Clus = localClusteringCoefficient(girg)
+			# print(loc_Clus)
+			for key, value in loc_Clus.items():
+				if loc_Clus.get(key):
+					locClus_sum[key] += value
+		max_key = max(k for k, v in locClus_sum.items() if v != 0.0)
+		# print(max_key)
+		# print(locClus_sum)
+		locClus_sum = dict(list(locClus_sum.items())[:max_key+1])
+		# print(locClus_sum)
+		locClus = {k: v / nr_graphs for k, v in locClus_sum.items()}
+		# print(locClus)
 		big_clusDict[n] = locClus
 	return big_clusDict
 

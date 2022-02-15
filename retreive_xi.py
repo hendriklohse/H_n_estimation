@@ -6,16 +6,16 @@ import numpy as np
 # import tail_estimation
 
 
-def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, testing):
+def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, labda, testing):
 	if testing == 1:
-		outputFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple" + ".dat"
+		outputFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple_" + str(k_c) + "_k_c" + str(labda) + "labda_" + ".dat"
 		#print('/output/' + outputFile)
-		plotFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple" + ".pdf"
-		with open('./output/k-3/' + outputFile, 'w') as f:
-			for duo in sample:
+		plotFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple_" + str(k_c) + "_k_c" + str(labda) + "labda_" + ".pdf"
+		with open('./output/labdas/' + outputFile, 'w') as f:
+			for duo in sample[:k_c]:
 				f.write(str(duo[0]) + " " + str(duo[1]) + "\n")
 		# + '--pnoise 1' + ' --noise 1'
-		command = 'python tail_estimation.py ./output/k-3/' + outputFile + ' ./plots/k-3/' + plotFile
+		command = 'python tail_estimation.py --verbose 0 --diagplots 0 ./output/labdas/' + outputFile + ' ./plots/labdas/' + plotFile + " " + str(labda)
 		os.system(command)
 		# print('end os.system(command)')
 		# stream = os.popen(command)

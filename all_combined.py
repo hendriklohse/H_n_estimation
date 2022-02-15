@@ -11,6 +11,8 @@ import numpy as np
 # from matplotlib import pyplot as plt
 # from collections import Counter
 # from collections import OrderedDict
+from sklearn.metrics import mean_squared_error
+
 
 from exactClusteringFunction import incompbeta, beta
 
@@ -23,6 +25,8 @@ from retreive_xi import run_tail_estimation
 from sampling_CDF import sample_from_CDF
 # from getEstimates import get_estimates
 from calculate_H_2 import CDF
+
+
 
 
 # from sampling_H import simulate3
@@ -53,82 +57,127 @@ def run_all(n, nruns, ple, bigLocClus):
 	# locClus = zipfClustering(ple, n)
 	# # print(locClus)
 	#
+	labdas_eta_dict = {}
+	labdas_rrms_dict = {}
 	# H_n = create_H_n(clus_dict=locClus, dict_length=len(locClus.keys()), n=n, ple=ple)
 	if bigLocClus.get(n):
 		locClus = bigLocClus[n]
-		k_c = int(n**(1/ple))
-		k_c = len(locClus.keys())
-		print(k_c)
-		H_n_CDF = CDF(clusDict=locClus, k_c=k_c)
-		#
+		labdaList = [v/3 for v in range(4, 12)]
+		# k_c_list = [int(n**(1/(ple+(c/10)))) for c in range(10)]
+		k_c_list = [int(n**(1/(ple+0.45)))]
+		# k_c_list = [len(locClus.keys())]
+		# k_c = len(locClus.keys())
+		print(k_c_list)
+		results_k_c = []
+		for labda in labdaList:
+			for i in range(len(k_c_list)):
+				H_n_CDF = CDF(clusDict=locClus, k_c=k_c_list[i],labda=labda)
+				#
 
-		# sample_ = sample_H(dist=H_n, nruns=nruns)
-		sample_ = sample_from_CDF(H_n_CDF, nruns=nruns)
+				# sample_ = sample_H(dist=H_n, nruns=nruns)
+				sample_ = sample_from_CDF(H_n_CDF, nruns=nruns)
 
-		# run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c, testing=1)
+				# run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c, testing=1)
 
-		estimates_dict = run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c, testing=1)
-		results = {"hill_ple": None, "moments_ple": None, "kernel_ple": None}
-		# print(estimates_dict)
-		if ple == 2.5:
-			for key, value in estimates_dict.items():
-				results[key] = value
-				estimates_dict[key] = abs(value - 1) if value != None else None
-		elif ple > 2.5:
-			for key, value in estimates_dict.items():
-				results[key] = value
-				estimates_dict[key] = abs(value - 1) if value != None else None
-		elif 2 < ple and ple < 2.5:
-			for key, value in estimates_dict.items():
-				results[key] = value
-				estimates_dict[key] = abs(value - (2 * ple - 4)) if value != None else None
-		else:
-			print("error: ple not in correct range")
-			return None
-		# get_estimates(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_)
-		# print(estimates_dict)
-		nu = 1
-		alpha = (ple - 1) / 2
-		xi = (4 * alpha * nu) / (np.pi * (2 * alpha - 1))
-		x_axis = [i for i in range(2, k_c + 1)]
-		hill_ple = results["hill_ple"]
-		moments_ple = results["moments_ple"]
-		kernel_ple = results["kernel_ple"]
-		# plot comparing with the exact clustering function
-		if ple == 2.5:
-			real_clusList = [6 * nu / np.pi * np.log(k) / k for k in range(2, k_c + 1)]
-			scaling = 1
-		elif ple > 2.5:
-			real_clusList = [8 * alpha * nu / (np.pi * (4 * alpha - 3)) * k ** (-1) for k in range(2, k_c + 1)]
-			scaling = 1
-		elif 2 < ple and ple < 2.5:
-			real_clusList = [(((3 * alpha - 1) / (2 ** (4 * alpha + 1) * alpha * (alpha - 1) ** 2) + (
-					(alpha - 0.5) * incompbeta(0.5, 2 * alpha + 1, 2 * alpha - 2)) / (2 * (alpha - 1) * alpha) - (
-								   beta(2 * alpha, 3 * alpha - 4)) / (4 * (alpha - 1))) * xi ** (4 * alpha - 2)) *
-							 k ** (2 - 4 * alpha) for k in range(2, k_c + 1)]
-			scaling = 4*alpha-2
+				estimates_dict = run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c_list[i], labda=labda, testing=1)
+				rrms_estimates_dict = {"hill_ple": 10000, "moments_ple": 10000, "kernel_ple": 10000}
+				# print(estimates_dict)
+				if ple == 2.5:
+					for key, value in estimates_dict.items():
+						# estimates_dict[key] = value
+						rrms = np.sqrt((1 - value)**2) / 1 if value is not None else None
+						# rrms = mean_squared_error(y_true =1, y_pred=value, squared=False) / 1 if value is not None else None
+						rrms_estimates_dict[key] = rrms
+				elif ple > 2.5:
+					for key, value in estimates_dict.items():
+						# estimates_dict[key] = value
+						rrms = np.sqrt((1 - value)**2) / 1 if value is not None else None
+						# rrms = mean_squared_error(y_true =1, y_pred=value, squared=False) / 1 if value is not None else None
+						rrms_estimates_dict[key] = rrms
+				elif 2 < ple < 2.5:
+					for key, value in estimates_dict.items():
+						# estimates_dict[key] = value
+						rrms = np.sqrt((2*ple-4 - value)**2) / (2*ple-4) if value is not None else None
+						# rrms = mean_squared_error(y_true =2*ple-4, y_pred=value, squared=False) / (2*ple-4) if value is not None else None
+						rrms_estimates_dict[key] = rrms
+				else:
+					print("error: ple not in correct range")
+					return None
+				# get_estimates(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_)
+				# print(estimates_dict)
 
-		plt.plot(x_axis, real_clusList, label=r"real function $(\sim \eta=1)$", color="blue", lw=1.5)
-		plt.plot(x_axis, [k ** (-scaling) for k in range(2, k_c +1)], ls="-.", lw=1.5, color="black",
-				 label=r"real scaling $(\eta=" + str(scaling) + r")$")
-		plt.plot(x_axis, [k ** (-hill_ple) for k in range(2, k_c + 1)], ls='--', lw=2,
-				 label=r"Adj. Hill Scaling $(\eta=" + str(hill_ple) + r")$", color="red")
-		plt.plot(x_axis, [k ** (-moments_ple) for k in range(2, k_c + 1)], ls='--', lw=2,
-				 label=r"Moments Scaling $(\eta=" + str(moments_ple) + r")$", color="cyan")
-		plt.plot(x_axis, [k ** (-kernel_ple) for k in range(2, k_c + 1)], ls='--', lw=2,
-				 label=r"Kernel Scaling $(\eta=" + str(kernel_ple) + r")$", color="orange")
-		plt.xlabel(r" $k$")
-		plt.ylabel(r" $\gamma(k)")
-		plt.title("clustering function and estimators for ple {}".format(str(ple)))
-		plt.yscale("log")
-		plt.xscale("log")
-		plt.legend()
-		plt.savefig('./Figures/Plots/ple_{}_n{}_nruns{}.png'.format(str(ple), str(n), str(nruns)))
-		plt.show()
+				labdas_eta_dict[labda] = estimates_dict
+				labdas_rrms_dict[labda] = rrms_estimates_dict #plots the rrms
 
-	return estimates_dict
+				# Below: for plotting.
+				nu = 1
+				alpha = (ple - 1) / 2
+				# print(alpha)
+				xi = (4 * alpha * nu) / (np.pi * (2 * alpha - 1))
+				x_axis = [i for i in range(2, k_c_list[i] + 1)]
+				hill_ple = estimates_dict["hill_ple"]
+				moments_ple = estimates_dict["moments_ple"]
+				kernel_ple = estimates_dict["kernel_ple"]
+				# plot comparing with the exact clustering function
+				if ple == 2.5:
+					# real_clusList = [6 * nu / np.pi * np.log(k) / k for k in range(2, k_c_list[i] + 1)]
+					scaling = 1
+				elif ple > 2.5:
+					# real_clusList = [8 * alpha * nu / (np.pi * (4 * alpha - 3)) * k ** (-1) for k in range(2, k_c_list[i] + 1)]
+					scaling = 1
+				elif 2 < ple < 2.5:
+					# # real_clusList = [(((3 * alpha - 1) / (2 ** (4 * alpha + 1) * alpha * (alpha - 1) ** 2) + (
+					# 		(alpha - 0.5) * incompbeta(0.5, 2 * alpha + 1, 2 * alpha - 2)) / (2 * (alpha - 1) * alpha) - (
+					# 					   beta(2 * alpha, 3 * alpha - 4)) / (4 * (alpha - 1))) * xi ** (4 * alpha - 2)) *
+					# 				 k ** (2 - 4 * alpha) for k in range(2, k_c_list[i] + 1)]
+					scaling = 4*alpha-2
+				else:
+					print("error: invalid ple")
+					return None
+
+				# plt.plot(x_axis, real_clusList, label=r"real function $(\sim \eta=1)$", color="blue", lw=1.5)
+				plt.plot(x_axis, [k ** (-scaling) for k in range(2, k_c_list[i] +1)], ls="-.", lw=1.5, color="black",
+						 label=r"real scaling $(\eta=" + str(scaling) + r")$")
+				plt.plot(x_axis, [k ** (-hill_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
+						 label=r"Adj. Hill Scaling $(\eta=" + str(hill_ple) + r")$", color="red")
+				plt.plot(x_axis, [k ** (-moments_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
+						 label=r"Moments Scaling $(\eta=" + str(moments_ple) + r")$", color="cyan")
+				plt.plot(x_axis, [k ** (-kernel_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
+						 label=r"Kernel Scaling $(\eta=" + str(kernel_ple) + r")$", color="orange")
+				plt.xlabel(r" $k$")
+				plt.ylabel(r" $\gamma(k)")
+				plt.title("clustering function and estimators for ple {} labda {}".format(str(ple), str(labda)))
+				plt.yscale("log")
+				plt.xscale("log")
+				plt.legend()
+				plt.savefig('./Figures/Plots/labdas/ple_{}_n{}_nruns{}_k_c{}_labda{}.png'.format(str(ple), str(n), str(nruns), str(k_c_list[i]), str(labda)))
+				# plt.show()
+
+				results_k_c.append(estimates_dict)
+
+			# plt.plot([elt for elt in k_c_list], [1 for _ in range(len(k_c_list))], label=r"coefficient $\eta = 1$", color="black")
+			# plt.plot([elt for elt in k_c_list], [results_k_c[i]["hill_ple"] for i in range(len(results_k_c))], 'or' , label="hill result", color="red")
+			# plt.plot([elt for elt in k_c_list], [results_k_c[i]["moments_ple"] for i in range(len(results_k_c))],'oc' , label="moments result", color="cyan")
+			# plt.plot([elt for elt in k_c_list], [results_k_c[i]["kernel_ple"] for i in range(len(results_k_c))], 'og', label="kernel result", color="orange")
+			# plt.title("estimator performace for different k_c's for ple={}".format(str(ple)))
+			# plt.xlabel("k_c")
+			# plt.ylabel(r"$\gamma(k)$")
+			# plt.legend()
+			# plt.savefig('./Figures/k_c/ple_{}_n{}_nruns{}.png'.format(str(ple), str(n), str(nruns)))
+			# plt.show()
+		print("labdas_eta_dict:")
+		print(labdas_eta_dict)
+
+		print("labdas_rrms_dict:")
+		print(labdas_rrms_dict)
+
+		return labdas_rrms_dict
+
+	else:
+		print("error: GIRG with " + str(n) + " nodes not sampled")
+		return None
 
 
 # NOTE: ple of both functions should be equal.
-bigLoc = makeBigClus(n_list=[200000], ple=2.6)
-run_all(n=200000, nruns=100000, ple=2.6, bigLocClus=bigLoc)
+bigLoc = makeBigClus(n_list=[100000], ple=2.6, nr_graphs=2)
+run_all(n=100000, nruns=100000, ple=2.6, bigLocClus=bigLoc)

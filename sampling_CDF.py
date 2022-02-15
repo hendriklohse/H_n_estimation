@@ -44,12 +44,12 @@ def sample_from_CDF(cdf_list, nruns):
 	ccdf_samples = [1-elt for elt in cdf_samples]
 
 	# PLOT SAMPLED CCDF LOGLOG
-	plt.plot(ccdf_samples)
-	plt.yscale('log')
-	plt.xscale('log')
-	plt.title('sampled loglog CCDF of H_n')
-	plt.savefig('./Figures/CDFsampled_H_n_CCDF_loglog')
-	plt.show()
+	# plt.plot(ccdf_samples)
+	# plt.yscale('log')
+	# plt.xscale('log')
+	# plt.title('sampled loglog CCDF of H_n')
+	# plt.savefig('./Figures/CDFsampled_H_n_CCDF_loglog')
+	# plt.show()
 
 	return samples
 

@@ -57,7 +57,7 @@ def get_distribution(data_sequence, number_of_bins = 30):
     lower_bound = log(lower_bound) if lower_bound > 0 else -1
     upper_bound = log(upper_bound)
     bins = np.logspace(lower_bound, upper_bound, number_of_bins)
-    
+
     # compute the histogram using numpy
     y, __ = np.histogram(data_sequence, bins = bins, density = True)
     # for each bin, compute its midpoint
@@ -71,7 +71,7 @@ def get_distribution(data_sequence, number_of_bins = 30):
 def get_ccdf(degree_sequence):
     """
     Function to get CCDF of the list of degrees.
-    
+
     Args:
         degree_sequence: numpy array of nodes' degrees.
 
@@ -93,7 +93,7 @@ def get_ccdf(degree_sequence):
     # plt.show()
     return x_ccdf, y_ccdf
     # return uniques[::-1], (1. - cumprob)[::-1]
-    
+
 # ================================================
 # ========== Hill Tail Index Estimation ==========
 # ================================================
@@ -121,18 +121,18 @@ def get_moments_estimates_1(ordered_data):
 def get_moments_estimates_2(ordered_data):
     """
     Function to calculate first and second moments arrays
-    given an ordered data sequence. 
+    given an ordered data sequence.
     Decreasing ordering is required.
 
     Args:
         ordered_data: numpy array of ordered data for which
-                      the 1st (Hill estimator) and 2nd moments 
+                      the 1st (Hill estimator) and 2nd moments
                       are calculated.
     Returns:
         M1: numpy array of 1st moments (Hill estimator)
             corresponding to all possible order statistics
             of the dataset.
-        M2: numpy array of 2nd moments corresponding to all 
+        M2: numpy array of 2nd moments corresponding to all
             possible order statistics of the dataset.
 
     """
@@ -148,21 +148,21 @@ def get_moments_estimates_2(ordered_data):
 
 def get_moments_estimates_3(ordered_data):
     """
-    Function to calculate first, second and third moments 
-    arrays given an ordered data sequence. 
+    Function to calculate first, second and third moments
+    arrays given an ordered data sequence.
     Decreasing ordering is required.
 
     Args:
         ordered_data: numpy array of ordered data for which
-                      the 1st (Hill estimator), 2nd and 3rd moments 
+                      the 1st (Hill estimator), 2nd and 3rd moments
                       are calculated.
     Returns:
         M1: numpy array of 1st moments (Hill estimator)
             corresponding to all possible order statistics
             of the dataset.
-        M2: numpy array of 2nd moments corresponding to all 
+        M2: numpy array of 2nd moments corresponding to all
             possible order statistics of the dataset.
-        M3: numpy array of 3rd moments corresponding to all 
+        M3: numpy array of 3rd moments corresponding to all
             possible order statistics of the dataset.
 
     """
@@ -203,7 +203,7 @@ def hill_dbs(ordered_data, t_bootstrap = 0.5,
             eps_stop:     parameter controlling range of AMSE minimization.
                           Defined as the fraction of order statistics to consider
                           during the AMSE minimization step.
-            verbose:      flag controlling bootstrap verbosity. 
+            verbose:      flag controlling bootstrap verbosity.
             diagn_plots:  flag to switch on/off generation of AMSE diagnostic
                           plots.
 
@@ -251,18 +251,18 @@ def hill_dbs(ordered_data, t_bootstrap = 0.5,
             samples_n1 += current_amse1
             good_counts1[np.where(current_amse1 != np.nan)] += 1
         averaged_delta = samples_n1 / good_counts1
-        
+
         max_index1 = (np.abs(np.linspace(1./n1, 1.0, n1) - eps_stop)).argmin()
         k1 = np.nanargmin(averaged_delta[min_index1:max_index1]) + 1 + min_index1 #take care of indexing
         if diagn_plots:
             n1_amse = averaged_delta
             x1_arr = np.linspace(1./n1, 1.0, n1)
-        
+
         # second bootstrap with n2 sample size
         n2 = int(n1*n1/float(n))
         samples_n2 = np.zeros(n2-1)
         good_counts2 = np.zeros(n2-1)
-    
+
         for i in range(r_bootstrap):
             sample = np.random.choice(ordered_data, n2, replace = True)
             sample[::-1].sort()
@@ -272,8 +272,8 @@ def hill_dbs(ordered_data, t_bootstrap = 0.5,
             good_counts2[np.where(current_amse2 != np.nan)] += 1
         max_index2 = (np.abs(np.linspace(1./n2, 1.0, n2) - eps_stop)).argmin()
         averaged_delta = samples_n2 / good_counts2
-        
-        
+
+
         k2 = np.nanargmin(averaged_delta[min_index2:max_index2]) + 1 + min_index2 #take care of indexing
         if diagn_plots:
             n2_amse = averaged_delta
@@ -285,20 +285,20 @@ def hill_dbs(ordered_data, t_bootstrap = 0.5,
             min_index1 = min_index1 + int(0.005*n)
             min_index2 = min_index2 + int(0.005*n)
             k2 = None
-    
+
     '''
     # this constant is provided in the Danielsson's paper
     # use instead of rho below if needed
     rho = (np.log(k1)/(2.*np.log(n1) - np.log(k1)))\
           **(2.*(np.log(n1) - np.log(k1))/(np.log(n1)))
     '''
-    
+
     # this constant is provided in Qi's paper
     rho = (1. - (2*(np.log(k1) - np.log(n1))/(np.log(k1))))**(np.log(k1)/np.log(n1) - 1.)
-    
+
     k_star = (k1*k1/float(k2)) * rho
     k_star = int(np.round(k_star))
-    
+
     # enforce k_star to pick 2nd value (rare cases of extreme cutoffs)
     if k_star == 0:
         k_star = 2
@@ -318,7 +318,7 @@ def hill_dbs(ordered_data, t_bootstrap = 0.5,
         x1_arr, x2_arr, n1_amse, n2_amse = None, None, None, None
     return k_star, x1_arr, n1_amse, k1/float(n1), max_index1, x2_arr, n2_amse, k2/float(n2), max_index2
 
-def hill_estimator(ordered_data,
+def hill_estimator(ordered_data, labda,
                    bootstrap = True, t_bootstrap = 0.5,
                    r_bootstrap = 500, verbose = False,
                    diagn_plots = False, eps_stop = 0.99):
@@ -339,7 +339,7 @@ def hill_estimator(ordered_data,
         eps_stop:     parameter controlling range of AMSE minimization.
                       Defined as the fraction of order statistics to consider
                       during the AMSE minimization step.
-        verbose:      flag controlling bootstrap verbosity. 
+        verbose:      flag controlling bootstrap verbosity.
         diagn_plots:  flag to switch on/off generation of AMSE diagnostic
                       plots.
 
@@ -363,7 +363,7 @@ def hill_estimator(ordered_data,
         results = hill_dbs(ordered_data,
                            t_bootstrap = t_bootstrap,
                            r_bootstrap = r_bootstrap,
-                           verbose = verbose, 
+                           verbose = verbose,
                            diagn_plots = diagn_plots,
                            eps_stop = eps_stop)
         k_star, x1_arr, n1_amse, k1, max_index1, x2_arr, n2_amse, k2, max_index2 = results
@@ -372,15 +372,16 @@ def hill_estimator(ordered_data,
             results = hill_dbs(ordered_data,
                            t_bootstrap = t_bootstrap,
                            r_bootstrap = r_bootstrap,
-                           verbose = verbose, 
+                           verbose = verbose,
                            diagn_plots = diagn_plots,
                            eps_stop = eps_stop)
             k_star, x1_arr, n1_amse, k1, max_index1, x2_arr, n2_amse, k2, max_index2 = results
         xi_star = xi_arr[k_star-1]
-        hill_ple = 1./xi_star - 2
+        hill_ple = 1./xi_star + 1 - labda
         res_dict["hill_ple"] = hill_ple
         # print(res_dict)
-        print("Adjusted Hill estimated eta:", 1./xi_star - 2)
+        print("Adjusted Hill estimated eta:", hill_ple)
+        print("labda:", labda) #for testing
         print("**********")
     else:
         k_star, xi_star = None, None
@@ -403,7 +404,7 @@ def smooth_hill_estimator(ordered_data, r_smooth = 2):
                       value such as 2 or 3.
     Returns:
         k_arr:  numpy array of order statistics based on the data provided.
-        xi_arr: numpy array of tail index estimates corresponding to 
+        xi_arr: numpy array of tail index estimates corresponding to
                 the order statistics array k_arr.
     """
     n = len(ordered_data)
@@ -427,7 +428,7 @@ def smooth_hill_estimator(ordered_data, r_smooth = 2):
 # ===================================================
 
 def moments_dbs_prefactor(xi_n, n1, k1):
-    """ 
+    """
     Function to calculate pre-factor used in moments
     double-bootstrap procedure.
 
@@ -466,7 +467,7 @@ def moments_dbs_prefactor(xi_n, n1, k1):
             e = (1.-5*xi_n)*(1-6*xi_n)
             V = a*(b+c)/(d*e)
             return V
-    
+
     def b(xi_n, rho):
         if xi_n < rho:
             a1 = (1.-xi_n)*(1-2*xi_n)
@@ -501,7 +502,7 @@ def moments_dbs(ordered_data, xi_n, t_bootstrap = 0.5,
                 r_bootstrap = 500, eps_stop = 1.0,
                 verbose = False, diagn_plots = False):
     """
-    Function to perform double-bootstrap procedure for 
+    Function to perform double-bootstrap procedure for
     moments estimator.
 
     Args:
@@ -516,10 +517,10 @@ def moments_dbs(ordered_data, xi_n, t_bootstrap = 0.5,
         eps_stop:     parameter controlling range of AMSE minimization.
                       Defined as the fraction of order statistics to consider
                       during the AMSE minimization step.
-        verbose:      flag controlling bootstrap verbosity. 
+        verbose:      flag controlling bootstrap verbosity.
         diagn_plots:  flag to switch on/off generation of AMSE diagnostic
                       plots.
-        
+
 
     Returns:
         k_star:     number of order statistics optimal for estimation
@@ -566,7 +567,7 @@ def moments_dbs(ordered_data, xi_n, t_bootstrap = 0.5,
     if diagn_plots:
         n1_amse = averaged_delta
         x1_arr = np.linspace(1./n1, 1.0, n1)
-    
+
 
     #r second bootstrap with n2 sample size
     n2 = int(n1*n1/float(n))
@@ -586,11 +587,11 @@ def moments_dbs(ordered_data, xi_n, t_bootstrap = 0.5,
     if diagn_plots:
         n2_amse = averaged_delta
         x2_arr = np.linspace(1./n2, 1.0, n2)
-    
+
     if k2 > k1:
-        print("WARNING(moments): estimated k2 is greater than k1! Re-doing bootstrap...") 
+        print("WARNING(moments): estimated k2 is greater than k1! Re-doing bootstrap...")
         return 9*[None]
-    
+
     #calculate estimated optimal stopping k
     prefactor = moments_dbs_prefactor(xi_n, n1, k1)
     k_star = int((k1*k1/float(k2)) * prefactor)
@@ -611,7 +612,7 @@ def moments_dbs(ordered_data, xi_n, t_bootstrap = 0.5,
         x1_arr, x2_arr, n1_amse, n2_amse = None, None, None, None
     return k_star, x1_arr, n1_amse, k1/float(n1), max_index1, x2_arr, n2_amse, k2/float(n2), max_index2
 
-def moments_estimator(ordered_data,
+def moments_estimator(ordered_data, labda,
                       bootstrap = True, t_bootstrap = 0.5,
                       r_bootstrap = 500, verbose = False,
                       diagn_plots = False, eps_stop = 0.99):
@@ -632,7 +633,7 @@ def moments_estimator(ordered_data,
         eps_stop:     parameter controlling range of AMSE minimization.
                       Defined as the fraction of order statistics to consider
                       during the AMSE minimization step.
-        verbose:      flag controlling bootstrap verbosity. 
+        verbose:      flag controlling bootstrap verbosity.
         diagn_plots:  flag to switch on/off generation of AMSE diagnostic
                       plots.
 
@@ -659,7 +660,7 @@ def moments_estimator(ordered_data,
         results = moments_dbs(ordered_data, xi_n,
                               t_bootstrap = t_bootstrap,
                               r_bootstrap = r_bootstrap,
-                              verbose = verbose, 
+                              verbose = verbose,
                               diagn_plots = diagn_plots,
                               eps_stop = eps_stop)
         while results[0] == None:
@@ -667,7 +668,7 @@ def moments_estimator(ordered_data,
             results = moments_dbs(ordered_data, xi_n,
                                   t_bootstrap = t_bootstrap,
                                   r_bootstrap = r_bootstrap,
-                                  verbose = verbose, 
+                                  verbose = verbose,
                                   diagn_plots = diagn_plots,
                                   eps_stop = eps_stop)
         k_star, x1_arr, n1_amse, k1, max_index1, x2_arr, n2_amse, k2, max_index2 = results
@@ -675,10 +676,10 @@ def moments_estimator(ordered_data,
         if xi_star <= 0:
             print ("Moments estimated eta: infinity (xi <= 0).")
         else:
-            moments_ple = 1./xi_star - 2
+            moments_ple = 1./xi_star + 1 - labda
             res_dict["moments_ple"] = moments_ple
             # print(res_dict)
-            print ("Moments estimated eta:", 1./xi_star - 2)
+            print ("Moments estimated eta:", moments_ple)
         print("**********")
     else:
         k_star, xi_star = None, None
@@ -813,7 +814,7 @@ def kernel_type_dbs(ordered_data, hsteps, t_bootstrap = 0.5,
                     r_bootstrap = 500, alpha = 0.6, eps_stop = 1.0,
                     verbose = False, diagn_plots = False):
     """
-    Function to perform double-bootstrap procedure for 
+    Function to perform double-bootstrap procedure for
     moments estimator.
 
     Args:
@@ -831,10 +832,10 @@ def kernel_type_dbs(ordered_data, hsteps, t_bootstrap = 0.5,
         eps_stop:     parameter controlling range of AMSE minimization.
                       Defined as the fraction of order statistics to consider
                       during the AMSE minimization step.
-        verbose:      flag controlling bootstrap verbosity. 
+        verbose:      flag controlling bootstrap verbosity.
         diagn_plots:  flag to switch on/off generation of AMSE diagnostic
                       plots.
-        
+
 
     Returns:
         h_star:       fraction of order statistics optimal for estimation
@@ -862,7 +863,7 @@ def kernel_type_dbs(ordered_data, hsteps, t_bootstrap = 0.5,
         print("Performing kernel double-bootstrap...")
     n = len(ordered_data)
     eps_bootstrap = 0.5*(1+np.log(int(t_bootstrap*n))/np.log(n))
-    
+
     # first bootstrap with n1 sample size
     n1 = int(n**eps_bootstrap)
     samples_n1 = np.zeros(hsteps)
@@ -877,11 +878,11 @@ def kernel_type_dbs(ordered_data, hsteps, t_bootstrap = 0.5,
     max_index1 = (np.abs(np.logspace(np.log10(1./n1), np.log10(1.0), hsteps) - eps_stop)).argmin()
     x1_arr = np.logspace(np.log10(1./n1), np.log10(1.0), hsteps)
     averaged_delta = samples_n1 / good_counts1
-    h1 = x1_arr[np.nanargmin(averaged_delta[:max_index1])] 
+    h1 = x1_arr[np.nanargmin(averaged_delta[:max_index1])]
     if diagn_plots:
         n1_amse = averaged_delta
-        
-    
+
+
     # second bootstrap with n2 sample size
     n2 = int(n1*n1/float(n))
     if n2 < hsteps:
@@ -904,10 +905,10 @@ def kernel_type_dbs(ordered_data, hsteps, t_bootstrap = 0.5,
     h2 = x2_arr[np.nanargmin(averaged_delta[:max_index2])]
     if diagn_plots:
         n2_amse = averaged_delta
-    
+
     A = (143.*((np.log(n1) + np.log(h1))**2)/(3*(np.log(n1) - 13. * np.log(h1))**2))\
         **(-np.log(h1)/np.log(n1))
-    
+
     h_star = (h1*h1/float(h2)) * A
 
     if h_star > 1:
@@ -936,7 +937,7 @@ def kernel_type_dbs(ordered_data, hsteps, t_bootstrap = 0.5,
         max_k_index2 = None
     return h_star, x1_arr, n1_amse, h1, max_k_index1, x2_arr, n2_amse, h2, max_k_index2
 
-def kernel_type_estimator(ordered_data, hsteps, alpha = 0.6,
+def kernel_type_estimator(ordered_data, labda, hsteps, alpha = 0.6,
                          bootstrap = True, t_bootstrap = 0.5,
                          r_bootstrap = 500, verbose = False,
                          diagn_plots = False, eps_stop = 0.99):
@@ -962,7 +963,7 @@ def kernel_type_estimator(ordered_data, hsteps, alpha = 0.6,
         eps_stop:     parameter controlling range of AMSE minimization.
                       Defined as the fraction of order statistics to consider
                       during the AMSE minimization step.
-        verbose:      flag controlling bootstrap verbosity. 
+        verbose:      flag controlling bootstrap verbosity.
         diagn_plots:  flag to switch on/off generation of AMSE diagnostic
                       plots.
 
@@ -999,7 +1000,7 @@ def kernel_type_estimator(ordered_data, hsteps, alpha = 0.6,
                                   verbose = verbose, diagn_plots = diagn_plots,
                                   eps_stop = eps_stop)
             h_star, x1_arr, n1_amse, h1, max_index1, x2_arr, n2_amse, h2, max_index2 = results
-        
+
         #get k index which corresponds to h_star
         k_star = np.argmin(np.abs(h_arr - h_star))
         xi_star = xi_arr[k_star]
@@ -1009,10 +1010,10 @@ def kernel_type_estimator(ordered_data, hsteps, alpha = 0.6,
         if xi_star <= 0:
             print ("Kernel-type estimated eta: infinity (xi <= 0).")
         else:
-            kernel_ple = 1./xi_star - 2
+            kernel_ple = 1./xi_star + 1 - labda
             res_dict["kernel_ple"] = kernel_ple
             # print(res_dict)
-            print ("Kernel-type estimated eta:", 1./xi_star - 2)
+            print ("Kernel-type estimated eta:", kernel_ple)
         print("**********")
     else:
         k_star, xi_star = None, None
@@ -1057,17 +1058,18 @@ def pickands_estimator(ordered_data):
 # ========== Plotting and Data Processing ==========
 # ==================================================
 
-def make_plots(ordered_data, output_file_path, number_of_bins,
+def make_plots(ordered_data, output_file_path, labda, number_of_bins,
                r_smooth, alpha, hsteps, bootstrap_flag, t_bootstrap,
-               r_bootstrap, diagn_plots, eps_stop, theta1, theta2, 
+               r_bootstrap, diagn_plots, eps_stop, theta1, theta2,
                verbose, noise_flag, p_noise, savedata):
-    """ 
+    """
     Function to create plots and save tail index estimation data.
 
     Args:
         ordered_data:     numpy array for which tail index estimation
                           is performed. Decreasing ordering is required.
         output_file_path: file path to which plots should be saved.
+        labda:            float which to multiply eta with.
         number_of_bins:   number of log-bins for degree distribution.
         r_smooth:         integer parameter controlling the width
                           of smoothing window. Typically small
@@ -1103,7 +1105,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     """
 
     global res_dict
-    res_dict = {"hill_ple": None, "moments_ple": None, "kernel_ple": None}
+    res_dict = {"hill_ple": 10000, "moments_ple": 10000, "kernel_ple": 10000}
 
     output_dir = os.path.dirname(os.path.realpath(output_file_path))
     output_name = os.path.splitext(os.path.basename(output_file_path))[0]
@@ -1141,7 +1143,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         discrete_ordered_data[::-1].sort()
         ordered_data = add_uniform_noise(ordered_data, p = p_noise)
     ordered_data[::-1].sort()
-    
+
     # perform Pickands estimation
     if verbose:
         print("Calculating Pickands...")
@@ -1154,7 +1156,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         with open(os.path.join(output_dir+"/"+output_name+"_pickands.dat"), "w") as f:
             for i in range(len(k_p_arr)):
                 f.write(str(k_p_arr[i]) + " " + str(xi_p_arr[i]) + "\n")
-    
+
 
     # perform smooth Hill estimation
     if verbose:
@@ -1169,18 +1171,18 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         with open(os.path.join(output_dir+"/"+output_name+"_sm_hill.dat"), "w") as f:
             for i in range(len(k_sh_arr)):
                 f.write(str(k_sh_arr[i]) + " " + str(xi_sh_arr[i]) + "\n")
-    
-    
+
+
     # perform adjusted Hill estimation
     if verbose:
         print("Calculating adjusted Hill...")
     t1 = time.time()
-    hill_results = hill_estimator(ordered_data,
+    hill_results = hill_estimator(ordered_data, labda=labda,
                                         bootstrap = bootstrap_flag,
                                         t_bootstrap = t_bootstrap,
                                         r_bootstrap = r_bootstrap,
                                         diagn_plots = diagn_plots,
-                                        eps_stop = eps_stop, 
+                                        eps_stop = eps_stop,
                                         verbose = verbose)
     t2 =time.time()
     if verbose:
@@ -1202,12 +1204,12 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     if verbose:
         print("Calculating moments...")
     t1 = time.time()
-    moments_results = moments_estimator(ordered_data,
+    moments_results = moments_estimator(ordered_data, labda=labda,
                                         bootstrap = bootstrap_flag,
                                         t_bootstrap = t_bootstrap,
                                         r_bootstrap = r_bootstrap,
                                         diagn_plots = diagn_plots,
-                                        eps_stop = eps_stop, 
+                                        eps_stop = eps_stop,
                                         verbose = verbose)
     t2 = time.time()
     if verbose:
@@ -1228,13 +1230,13 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     if verbose:
         print("Calculating kernel-type...")
     t1 = time.time()
-    kernel_type_results = kernel_type_estimator(ordered_data, hsteps,
+    kernel_type_results = kernel_type_estimator(ordered_data, labda=labda, hsteps= hsteps,
                                                 alpha = alpha,
                                                 bootstrap = bootstrap_flag,
                                                 t_bootstrap = t_bootstrap,
                                                 r_bootstrap = r_bootstrap,
                                                 diagn_plots = diagn_plots,
-                                                eps_stop = eps_stop, 
+                                                eps_stop = eps_stop,
                                                 verbose = verbose)
     t2 = time.time()
     if verbose:
@@ -1254,7 +1256,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
                 f.write(str(k_k_arr[i]) + " " + str(xi_k_arr[i]) + "\n")
         with open(os.path.join(output_dir+"/"+output_name+"_kern_estimate.dat"), "w") as f:
             f.write(str(k_k_arr[k_k1_star]) + " " + str(xi_k_arr[k_k1_star]) + "\n")
-    
+
     # plotting part
     if verbose:
         print("Making plots...")
@@ -1278,7 +1280,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     axes[0,1].set_xscale("log")
     axes[0,1].set_yscale("log")
     axes[0,1].step(x_ccdf, y_ccdf, color = "#386cb0", lw = 1.5)
-    
+
     # draw scalings
     if noise_flag:
         xmin = discrete_ordered_data[k_h_star]
@@ -1286,12 +1288,12 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         xmin = ordered_data[k_h_star]
     x = x_ccdf[np.where(x_ccdf >= xmin)]
     l = np.mean(y_ccdf[np.where(x == xmin)])
-    mu = 1./xi_h_star - 3 #CCDF exponent: mu = eta - 1
+    mu = 1./xi_h_star #CCDF exponent: mu = eta + labda - 1
     if xi_h_star > 0:
         axes[0,1].plot(x, [l*(float(xmin)/k)**mu for k in x],
                        color = '#fb8072', ls = '--', lw = 2,
-                       label = r"Adj. Hill Scaling $(\mu="+\
-                       str(np.round(1./xi_h_star - 3, decimals = 3))+r")$")
+                       label = r"Adj. Hill Scaling $(\mu=\eta+\lambda - 1="+\
+                       str(np.round(1./xi_h_star, decimals = 3))+r")$")
         axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(mu)],
                                    color = "#fb8072", ls = 'none', marker = 'o',
                                    markerfacecolor = 'none', markeredgecolor = "#fb8072",
@@ -1302,12 +1304,12 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         xmin = ordered_data[k_m_star]
     x = x_ccdf[np.where(x_ccdf >= xmin)]
     l = np.mean(y_ccdf[np.where(x == xmin)])
-    mu = 1./xi_m_star - 3
+    mu = 1./xi_m_star
     if xi_m_star > 0:
         axes[0,1].plot(x, [l*(float(xmin)/k)**mu for k in x],
                        color = '#8dd3c7', ls = '--', lw = 2,
-                       label = r"Moments Scaling $(\mu="+\
-                       str(np.round(1./xi_m_star - 3, decimals = 3))+r")$")
+                       label = r"Moments Scaling $(\mu=\eta+\lambda - 1="+\
+                       str(np.round(1./xi_m_star, decimals = 3))+r")$")
         axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(mu)],
                                    color = "#8dd3c7", ls = 'none', marker = 'o',
                                    markerfacecolor = 'none', markeredgecolor = "#8dd3c7",
@@ -1316,15 +1318,15 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         xmin = discrete_ordered_data[k_k_star]
     else:
         xmin = ordered_data[k_k_star]
-    
+
     x = x_ccdf[np.where(x_ccdf >= xmin)]
     l = np.mean(y_ccdf[np.where(x == xmin)])
-    mu = 1./xi_k_star-3
+    mu = 1./xi_k_star
     if xi_k_star > 0:
         axes[0,1].plot(x, [l*(float(xmin)/k)**mu for k in x],
                        color = '#fdb462', ls = '--', lw = 2,
-                       label = r"Kernel Scaling $(\mu="+\
-                       str(np.round(1./xi_k_star - 3, decimals = 3))+r")$")
+                       label = r"Kernel Scaling $(\mu=\eta+\lambda - 1="+\
+                       str(np.round(1./xi_k_star, decimals = 3))+r")$")
         axes[0,1].plot((x[-1]), [l*(float(xmin)/x[-1])**(mu)],
                                    color = "#8dd3c7", ls = 'none', marker = 'o',
                                    markerfacecolor = 'none', markeredgecolor = "#fdb462",
@@ -1344,9 +1346,9 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     else:
         indices_to_plot_sh = np.where((k_sh_arr <= max_k) & (k_sh_arr >= min_k))
     axes[1,0].set_xlabel(r"Number of Order Statistics $\kappa$", fontsize = 20)
-    axes[1,0].set_ylabel(r"Estimated $\hat{\xi}$", fontsize = 20)    
+    axes[1,0].set_ylabel(r"Estimated $\hat{\xi}$", fontsize = 20)
     # plot smooth Hill
-    
+
     axes[1,0].plot(k_sh_arr[indices_to_plot_sh], xi_sh_arr[indices_to_plot_sh],
                    color = "#b3de69", alpha = 0.8, label = "Smooth Hill",
                    zorder = 10)
@@ -1365,17 +1367,17 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     if bootstrap_flag:
         axes[1,0].scatter([k_h_arr[k_h_star-1]], [xi_h_arr[k_h_star-1]],
                        color = "#fb8072", marker = "*", s = 100,
-                       edgecolor = "black", zorder = 20, 
+                       edgecolor = "black", zorder = 20,
                        label = r"$\widehat{\xi}^{Hill}="\
                            +str(np.round([xi_h_arr[k_h_star-1]][0], decimals = 3))\
                            +r"$")
     axes[1,0].legend(loc = "best")
 
-    
+
     axes[1,1].set_xlabel(r"Number of Order Statistics $\kappa$", fontsize = 20)
-    axes[1,1].set_ylabel(r"Estimated $\hat{\xi}$", fontsize = 20) 
-    axes[1,1].set_xscale("log")   
-    
+    axes[1,1].set_ylabel(r"Estimated $\hat{\xi}$", fontsize = 20)
+    axes[1,1].set_xscale("log")
+
     # plot smooth Hill
     axes[1,1].plot(k_sh_arr[indices_to_plot_sh], xi_sh_arr[indices_to_plot_sh],
                    color = "#b3de69", alpha = 0.8, label = "Smooth Hill",
@@ -1388,7 +1390,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     if bootstrap_flag:
         axes[1,1].scatter([k_h_arr[k_h_star-1]], [xi_h_arr[k_h_star-1]],
                        color = "#fb8072", marker = "*", s = 100,
-                       edgecolor = "black", zorder = 20, 
+                       edgecolor = "black", zorder = 20,
                        label = r"$\widehat{\xi}^{Hill}="\
                            +str(np.round([xi_h_arr[k_h_star-1]][0], decimals = 3))\
                            +r"$")
@@ -1415,14 +1417,14 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         indices_to_plot_m = np.where((xi_m_arr <= 3) & (xi_m_arr >= -3))
     else:
         indices_to_plot_m = np.where((k_m_arr <= max_k) & (k_m_arr >= min_k))
-    
+
     axes[2,0].plot(k_m_arr[indices_to_plot_m], xi_m_arr[indices_to_plot_m],
                    color = "#8dd3c7", alpha = 0.8, label = "Moments",
                    zorder = 10)
     if bootstrap_flag:
         axes[2,0].scatter([k_m_arr[k_m_star-1]], [xi_m_arr[k_m_star-1]],
                        color = "#8dd3c7", marker = "*", s = 100,
-                       edgecolor = "black", zorder = 20, 
+                       edgecolor = "black", zorder = 20,
                        label = r"$\widehat{\xi}^{Moments}="\
                            +str(np.round([xi_m_arr[k_m_star-1]][0], decimals = 3))\
                            +r"$")
@@ -1442,7 +1444,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     if bootstrap_flag:
         axes[2,0].scatter([k_k_arr[k_k1_star-1]], [xi_k_arr[k_k1_star-1]],
                        color = "#fdb462", marker = "*", s = 100,
-                       edgecolor = "black", zorder = 20, 
+                       edgecolor = "black", zorder = 20,
                        label = r"$\widehat{\xi}^{Kernel}="\
                            +str(np.round([xi_k_arr[k_k1_star-1]][0], decimals = 3))\
                            +r"$")
@@ -1465,7 +1467,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     if bootstrap_flag:
         axes[2,1].scatter([k_m_arr[k_m_star-1]], [xi_m_arr[k_m_star-1]],
                        color = "#8dd3c7", marker = "*", s = 100,
-                       edgecolor = "black", zorder = 20, 
+                       edgecolor = "black", zorder = 20,
                        label = r"$\widehat{\xi}^{Moments}="\
                            +str(np.round([xi_m_arr[k_m_star-1]][0], decimals = 3))\
                            +r"$")
@@ -1476,7 +1478,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
     if bootstrap_flag:
         axes[2,1].scatter([k_k_arr[k_k1_star-1]], [xi_k_arr[k_k1_star-1]],
                        color = "#fdb462", marker = "*", s = 100,
-                       edgecolor = "black", zorder = 20, 
+                       edgecolor = "black", zorder = 20,
                        label = r"$\widehat{\xi}^{Kernel}="\
                            +str(np.round([xi_k_arr[k_k1_star-1]][0], decimals = 3))\
                            +r"$")
@@ -1524,7 +1526,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
         axes_d[0].axvline(max_h_index2/float(len(x2_h_arr)), color = "#0072b2",
                           ls = '--', alpha = 0.5,
                           label = r"Minimization boundary for $n_2$ sample")
-        
+
 
         axes_d[0].legend(loc = "best")
         if savedata == 1:
@@ -1586,7 +1588,7 @@ def make_plots(ordered_data, output_file_path, number_of_bins,
                 f.write("Min for n1 sample: "+str(k1_m)+" "+str(n1_m_amse[int(len(x1_m_arr)*k1_m)-1])+"\n")
                 f.write("Min for n2 sample: "+str(k2_m)+" "+str(n2_m_amse[int(len(x2_m_arr)*k2_m)-1])+"\n")
                 f.write("Minimization boundary for n1 sample: "+str(max_m_index1/float(len(x1_m_arr)))+"\n")
-                f.write("Minimization boundary for n2 sample: "+str(max_m_index2/float(len(x2_m_arr)))+"\n")        
+                f.write("Minimization boundary for n2 sample: "+str(max_m_index2/float(len(x2_m_arr)))+"\n")
 
 
         min_k1 = 2
@@ -1659,6 +1661,8 @@ def main():
     parser.add_argument("output_file_path",
                         help = "Output path for plots. Use either PDF or\
                         PNG format.", type = str)
+    parser.add_argument("labda",
+                        help="Multiplier of eta", type= float)
     parser.add_argument("--nbins",
                         help = "Number of bins for degree\
                         distribution (default = 30)", type = int,
@@ -1822,7 +1826,7 @@ def main():
     print("========== Tail Index Estimation ==========")
     print("Number of data entries: %i" % N)
     ordered_data = np.zeros(N)
-    current_index = 0      
+    current_index = 0
     with open(args.sequence_file_path, "r") as f:
         for line in f:
             degree, count = line.strip().split(delimiter)
@@ -1833,18 +1837,18 @@ def main():
     eps_stop = 1 - float(len(ordered_data[np.where(ordered_data <= amse_border)]))\
                    /len(ordered_data)
     print("========================")
-    print("Selected AMSE border value: %0.4f"%amse_border) 
+    print("Selected AMSE border value: %0.4f"%amse_border)
     print("Selected fraction of order statistics boundary for AMSE minimization: %0.4f"%eps_stop)
     print("========================")
-    make_plots(ordered_data, args.output_file_path, number_of_bins,
+    make_plots(ordered_data, args.output_file_path, args.labda, number_of_bins,
                r_smooth, alpha, hsteps, bootstrap_flag, t_bootstrap,
-               r_bootstrap, diagnostic_plots_flag, eps_stop, 
+               r_bootstrap, diagnostic_plots_flag, eps_stop,
                args.theta1, args.theta2, verbose, noise_flag,
                p_noise, args.savedata)
     # np.save('./result_dicts/res_dict.npy', res_dict)
 
 if __name__ == '__main__':
-    
+
     t1 = time.time()
     main()
     t2 = time.time()

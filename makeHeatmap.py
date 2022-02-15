@@ -74,6 +74,6 @@ def fill_data(N, N_step, Nruns ,Nruns_step, est, ple):
 	plt.show()
 
 
-fill_data(N=1000000, N_step=500000, Nruns=1000000, Nruns_step=500000, est=["hill_ple", "moments_ple", "kernel_ple"], ple=2.3)
+fill_data(N=1000000, N_step=500000, Nruns=1000000, Nruns_step=500000, est=["hill_ple", "moments_ple", "kernel_ple"], ple=2.5)
 
 

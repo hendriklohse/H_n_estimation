@@ -5,52 +5,52 @@ import numpy as np
 import matplotlib.pyplot as plt
 # import scipy
 #
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
-
-data = np.loadtxt('./Examples/CAIDA_KONECT.dat')
-ax1.plot(data[:,0], data[:,1])
-ax1.set_title('CAIDA_KONECT')
-ax1.set_yscale('log')
-ax1.set_xscale('log')
-ax1.set(xlim=(1, 10**4), ylim=(1, 10**5))
-ax1.grid(True)
-
-# data = np.loadtxt('./output/k-1/girg_1D_200000n_100000nruns_2.5ple_cut_372.dat')
+# fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
+#
+# data = np.loadtxt('./Examples/CAIDA_KONECT.dat')
+# ax1.plot(data[:,0], data[:,1])
+# ax1.set_title('CAIDA_KONECT')
+# ax1.set_yscale('log')
+# ax1.set_xscale('log')
+# ax1.set(xlim=(1, 10**4), ylim=(1, 10**5))
+# ax1.grid(True)
+#
+# # data = np.loadtxt('./output/k-1/girg_1D_200000n_100000nruns_2.5ple_cut_372.dat')
+# # ax2.plot(data[:,0], data[:,1])
+# # ax2.set_title('girg_200000n+100000nruns cut to 0.8*limit')
+# # ax2.set_yscale('log')
+# # ax2.set_xscale('log')
+# # ax2.set(xlim=(1, 10**4), ylim=(1, 10**5))
+# # ax2.grid(True)
+#
+# data = np.loadtxt('./output/k-3/girg_1D_100000n_1000000nruns_2.5ple.dat')
 # ax2.plot(data[:,0], data[:,1])
-# ax2.set_title('girg_200000n+100000nruns cut to 0.8*limit')
+# ax2.set_title('k-3 girg_1D_100000n_1000000nruns_2.5ple.dat')
 # ax2.set_yscale('log')
 # ax2.set_xscale('log')
 # ax2.set(xlim=(1, 10**4), ylim=(1, 10**5))
 # ax2.grid(True)
-
-data = np.loadtxt('./output/k-3/girg_1D_100000n_1000000nruns_2.5ple.dat')
-ax2.plot(data[:,0], data[:,1])
-ax2.set_title('k-3 girg_1D_100000n_1000000nruns_2.5ple.dat')
-ax2.set_yscale('log')
-ax2.set_xscale('log')
-ax2.set(xlim=(1, 10**4), ylim=(1, 10**5))
-ax2.grid(True)
-
-data = np.loadtxt('./output/k-3/girg_1D_500000n_1000000nruns_2.5ple.dat')
-ax3.plot(data[:,0], data[:,1])
-ax3.set_title('k-3 girg_1D_500000n_1000000nruns_2.5ple.dat')
-ax3.set_yscale('log')
-ax3.set_xscale('log')
-ax3.set(xlim=(1, 10**4), ylim=(1, 10**5))
-ax3.grid(True)
-
-
-data = np.loadtxt('./output/k-1_zipf_ple25.dat')
-ax4.plot(data[:,0], data[:,1])
-ax4.set_title('zipf ple2.5')
-ax4.set_yscale('log')
-ax4.set_xscale('log')
-ax4.set(xlim=(1, 10**4), ylim=(1, 10**5))
-ax4.grid(True)
-
-fig.tight_layout(pad=3.0)
-
-plt.show()
+#
+# data = np.loadtxt('./output/k-3/girg_1D_500000n_1000000nruns_2.5ple.dat')
+# ax3.plot(data[:,0], data[:,1])
+# ax3.set_title('k-3 girg_1D_500000n_1000000nruns_2.5ple.dat')
+# ax3.set_yscale('log')
+# ax3.set_xscale('log')
+# ax3.set(xlim=(1, 10**4), ylim=(1, 10**5))
+# ax3.grid(True)
+#
+#
+# data = np.loadtxt('./output/k-1_zipf_ple25.dat')
+# ax4.plot(data[:,0], data[:,1])
+# ax4.set_title('zipf ple2.5')
+# ax4.set_yscale('log')
+# ax4.set_xscale('log')
+# ax4.set(xlim=(1, 10**4), ylim=(1, 10**5))
+# ax4.grid(True)
+#
+# fig.tight_layout(pad=3.0)
+#
+# plt.show()
 
 # print(zipf.rvs(3.5, size=10000))
 # print(np.mean(zipf.rvs(3.5, size=10000)))
@@ -146,3 +146,4 @@ from scipy import stats
 # # plt.savefig('./Figures/k-3/Heatmap')
 # plt.show()
 
+# print([1,2,3,4][:2])
