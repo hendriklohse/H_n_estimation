@@ -13,7 +13,6 @@ import numpy as np
 # from collections import OrderedDict
 from sklearn.metrics import mean_squared_error
 
-
 from exactClusteringFunction import incompbeta, beta
 
 from create_girg import localClusteringCoefficient, makeBigClus
@@ -57,23 +56,27 @@ def run_all(n, nruns, ple, bigLocClus):
 	# locClus = zipfClustering(ple, n)
 	# # print(locClus)
 	#
-	labdas_eta_dict = {}
-	labdas_rrms_dict = {}
+	big_labdas_eta_dict = {}
+	big_labdas_rrms_dict = {}
 	# H_n = create_H_n(clus_dict=locClus, dict_length=len(locClus.keys()), n=n, ple=ple)
 	if bigLocClus.get(n):
 		locClus = bigLocClus[n]
-		labdaList = [v/3 for v in range(4, 12)]
+		labdaList = [v/4 for v in range(5, 15)]
 		# k_c_list = [int(n**(1/(ple+(c/10)))) for c in range(10)]
-		k_c_list = [int(n**(1/(ple+0.45)))]
+		k_c_list = [int(n**(1/(ple+1))), int(n**(1/(ple+0.5))), int(n**(1/(ple))), len(locClus.keys())]
 		# k_c_list = [len(locClus.keys())]
 		# k_c = len(locClus.keys())
 		print(k_c_list)
 		results_k_c = []
-		for labda in labdaList:
-			for i in range(len(k_c_list)):
+		for i in range(len(k_c_list)):
+			big_labdas_eta_dict[k_c_list[i]] = {}
+			big_labdas_rrms_dict[k_c_list[i]] = {}
+			for labda in labdaList:
+
 				H_n_CDF = CDF(clusDict=locClus, k_c=k_c_list[i],labda=labda)
 				#
-
+				print(big_labdas_eta_dict)
+				print(big_labdas_eta_dict[k_c_list[i]])
 				# sample_ = sample_H(dist=H_n, nruns=nruns)
 				sample_ = sample_from_CDF(H_n_CDF, nruns=nruns)
 
@@ -106,8 +109,8 @@ def run_all(n, nruns, ple, bigLocClus):
 				# get_estimates(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_)
 				# print(estimates_dict)
 
-				labdas_eta_dict[labda] = estimates_dict
-				labdas_rrms_dict[labda] = rrms_estimates_dict #plots the rrms
+				big_labdas_eta_dict[k_c_list[i]][labda] = estimates_dict
+				big_labdas_rrms_dict[k_c_list[i]][labda] = rrms_estimates_dict #plots the rrms
 
 				# Below: for plotting.
 				nu = 1
@@ -136,21 +139,21 @@ def run_all(n, nruns, ple, bigLocClus):
 					return None
 
 				# plt.plot(x_axis, real_clusList, label=r"real function $(\sim \eta=1)$", color="blue", lw=1.5)
-				plt.plot(x_axis, [k ** (-scaling) for k in range(2, k_c_list[i] +1)], ls="-.", lw=1.5, color="black",
-						 label=r"real scaling $(\eta=" + str(scaling) + r")$")
-				plt.plot(x_axis, [k ** (-hill_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
-						 label=r"Adj. Hill Scaling $(\eta=" + str(hill_ple) + r")$", color="red")
-				plt.plot(x_axis, [k ** (-moments_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
-						 label=r"Moments Scaling $(\eta=" + str(moments_ple) + r")$", color="cyan")
-				plt.plot(x_axis, [k ** (-kernel_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
-						 label=r"Kernel Scaling $(\eta=" + str(kernel_ple) + r")$", color="orange")
-				plt.xlabel(r" $k$")
-				plt.ylabel(r" $\gamma(k)")
-				plt.title("clustering function and estimators for ple {} labda {}".format(str(ple), str(labda)))
-				plt.yscale("log")
-				plt.xscale("log")
-				plt.legend()
-				plt.savefig('./Figures/Plots/labdas/ple_{}_n{}_nruns{}_k_c{}_labda{}.png'.format(str(ple), str(n), str(nruns), str(k_c_list[i]), str(labda)))
+				# plt.plot(x_axis, [k ** (-scaling) for k in range(2, k_c_list[i] +1)], ls="-.", lw=1.5, color="black",
+				# 		 label=r"real scaling $(\eta=" + str(scaling) + r")$")
+				# plt.plot(x_axis, [k ** (-hill_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
+				# 		 label=r"Adj. Hill Scaling $(\eta=" + str(hill_ple) + r")$", color="red")
+				# plt.plot(x_axis, [k ** (-moments_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
+				# 		 label=r"Moments Scaling $(\eta=" + str(moments_ple) + r")$", color="cyan")
+				# plt.plot(x_axis, [k ** (-kernel_ple) for k in range(2, k_c_list[i] + 1)], ls='--', lw=2,
+				# 		 label=r"Kernel Scaling $(\eta=" + str(kernel_ple) + r")$", color="orange")
+				# plt.xlabel(r" $k$")
+				# plt.ylabel(r" $\gamma(k)")
+				# plt.title("clustering function and estimators for ple {} labda {}".format(str(ple), str(labda)))
+				# plt.yscale("log")
+				# plt.xscale("log")
+				# plt.legend()
+				# plt.savefig('./Figures/Plots/labdas/ple_{}_n{}_nruns{}_k_c{}_labda{}.png'.format(str(ple), str(n), str(nruns), str(k_c_list[i]), str(labda)))
 				# plt.show()
 
 				results_k_c.append(estimates_dict)
@@ -166,12 +169,36 @@ def run_all(n, nruns, ple, bigLocClus):
 			# plt.savefig('./Figures/k_c/ple_{}_n{}_nruns{}.png'.format(str(ple), str(n), str(nruns)))
 			# plt.show()
 		print("labdas_eta_dict:")
-		print(labdas_eta_dict)
+		print(big_labdas_eta_dict)
 
 		print("labdas_rrms_dict:")
-		print(labdas_rrms_dict)
+		print(big_labdas_rrms_dict)
 
-		return labdas_rrms_dict
+		for i in range(len(k_c_list)):
+			labdas_kernel_rrms_list = [v["kernel_ple"] for v in big_labdas_rrms_dict[k_c_list[i]].values()]
+			labdas_kernel_list = [k for k in big_labdas_rrms_dict[k_c_list[i]].keys()]
+			if i == 0:
+				label = r"$k_c=n^{1/(ple + 1)}$"
+			elif i == 1:
+				label = r"$k_c=n^{1/(ple + 1/2)}$"
+			elif i == 2:
+				label = r"$k_c=n^{1/ple}$"
+			elif i ==3:
+				label = r"$k_c = n$"
+			else:
+				print("length of k_c_list exceeds 4")
+				break
+			plt.plot(labdas_kernel_list, labdas_kernel_rrms_list, label=label)
+
+		plt.title("kernel estimator error for n = {}, nruns = {}, ple = {}".format(str(n), str(nruns), str(ple)))
+		plt.xlabel(r"$\lambda$")
+		plt.ylabel("RRMS")
+		plt.ylim(0,3)
+		plt.legend()
+		plt.savefig("./Figures/kernelPlots/error_n{}_nruns{}_ple{}.png".format(str(n), str(nruns), str(ple)))
+		plt.show()
+
+		return big_labdas_rrms_dict
 
 	else:
 		print("error: GIRG with " + str(n) + " nodes not sampled")
@@ -179,5 +206,5 @@ def run_all(n, nruns, ple, bigLocClus):
 
 
 # NOTE: ple of both functions should be equal.
-bigLoc = makeBigClus(n_list=[100000], ple=2.6, nr_graphs=2)
-run_all(n=100000, nruns=100000, ple=2.6, bigLocClus=bigLoc)
+bigLoc = makeBigClus(n_list=[200000], ple=2.6, nr_graphs=5)
+run_all(n=200000, nruns=100000, ple=2.6, bigLocClus=bigLoc)

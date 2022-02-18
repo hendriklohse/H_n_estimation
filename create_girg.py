@@ -54,7 +54,7 @@ def makeBigClus(n_list, ple, nr_graphs):
 	big_clusDict = {}
 	for n in n_list:
 		locClus_sum = {i : 0.0 for i in range(n)}
-		for _ in range(nr_graphs):
+		for dummy in range(nr_graphs):
 			create_girg_(n=str(n), d=1, ple=ple, alpha="inf", deg=10, wseed=12, pseed=130, sseed=1400, threads=1, file="graph_" + str(n), dot=0, edge=1)
 			get_input("graph_" + str(n) + ".txt")
 			girg = generate_graph(firstTime=True, edgeFile="./input/graph_" + str(n) + ".txt")
