@@ -147,3 +147,22 @@ from scipy import stats
 # plt.show()
 
 # print([1,2,3,4][:2])
+
+# n=10
+# nruns=10
+# ple=3
+# k_c_list = [1,2,3]
+# k_c_label = "label k_c"
+#
+# fig = plt.figure(figsize=(5*1.618, 5*1))
+# ax = fig.add_subplot(1, 1, 1)
+# plt.plot([1,2,3,4], [1.4,1.2,0.3,1], label="Hill", color="firebrick", linestyle=(0, (5, 1)))
+# plt.plot([1,2,3,4], [1.5,1.0,0.1,0.7], label="Moments", color="skyblue", linestyle="solid")
+# plt.plot([1,2,3,4], [1.3,1.2,0.2,0.8], label="Kernel", color="orange", linestyle=(0, (3, 1, 1, 1)))
+# ax.set_title("Root MSE for n = {}, nruns = {}".format(str(n), str(nruns), str(ple)) + r"$\beta=$" + " {}".format(str(ple)) + k_c_label)
+# ax.set_xlabel(r"$\lambda$")
+# ax.set_ylabel("Root MSE")
+# ax.set_ylim(0,1.5)
+# ax.legend()
+# fig.savefig("./Figures/test")
+# plt.show()

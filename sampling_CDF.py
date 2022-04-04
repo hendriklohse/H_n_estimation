@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 # import scipy
 # from calculate_H import H_n_list, n
 
-
 def find_interval(u, cdf_list):
 	""""""
 	# print(u)
@@ -23,7 +22,7 @@ def find_interval(u, cdf_list):
 			print("else case")
 			return None
 
-def sample_from_CDF(cdf_list, nruns):
+def sample_from_CDF(cdf_list, nruns, k_c, labda):
 	""""""
 	t1 = time.time()
 	res = []
@@ -39,16 +38,18 @@ def sample_from_CDF(cdf_list, nruns):
 	print("time elapsed to sample " + str(nruns) + " times from CDF of H_n(k): " + str(t2 - t1))
 
 	# CALCULATE CDF
-	cusum = np.cumsum(list(zip(*samples))[1])
-	cdf_samples = cusum / cusum[-1]
-	ccdf_samples = [1-elt for elt in cdf_samples]
-
-	# PLOT SAMPLED CCDF LOGLOG
-	# plt.plot(ccdf_samples)
-	# plt.yscale('log')
-	# plt.xscale('log')
-	# plt.title('sampled loglog CCDF of H_n')
-	# plt.savefig('./Figures/CDFsampled_H_n_CCDF_loglog')
+	# cusum = np.cumsum(list(zip(*samples))[1])
+	# cdf_samples = cusum / cusum[-1]
+	# ccdf_samples = [1-elt for elt in cdf_samples]
+	#
+	# # PLOT SAMPLED CCDF LOGLOG
+	# fig = plt.figure(figsize=(5*1.618, 5*1))
+	# ax = fig.add_subplot(1, 1, 1)
+	# plt.plot(ccdf_samples, '.', color="black")
+	# ax.set_yscale('log')
+	# ax.set_xscale('log')
+	# ax.set_title('sampled loglog CCDF of H_n')
+	# plt.savefig('./Figures/CDFsampled_H_n_CCDF_loglog_k_c{}_labda{}.png'.format(str(k_c),str(labda)))
 	# plt.show()
 
 	return samples

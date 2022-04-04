@@ -1,9 +1,9 @@
 import numpy as np
-# from scipy import stats
-# import matplotlib.pyplot as plt
+from scipy import stats
+import matplotlib.pyplot as plt
 #
-from get_input import get_input, create_girg_
-from create_girg import generate_graph, localClusteringCoefficient, zipfClustering
+# from get_input import get_input, create_girg_
+# from create_girg import generate_graph, localClusteringCoefficient, zipfClustering
 
 def c_n_sum_(clusDict, limit, labda):
 	c_n_sum = 0
@@ -50,15 +50,20 @@ def CDF(clusDict, k_c, labda):
 	pmf = PMF(clusDict=clusDict, k_c=k_c, labda=labda)
 	cusum = np.cumsum(pmf)
 	cdf_list = cusum / cusum[-1]
+	ccdf_list = [1-elt for elt in cdf_list]
 
 	# plt.plot(cdf_list)
 	# plt.title("normal cdf")
 	# plt.show()
 	#
-	# plt.plot(cdf_list)
+	# plt.plot(ccdf_list, '.', color="black")
+	# # plt.gca().set_aspect(1/1.618)
 	# plt.yscale('log')
 	# plt.xscale('log')
-	# plt.title("loglog cdf")
+	# plt.ylabel("CCDF(k)")
+	# plt.xlabel("Degree")
+	# # plt.savefig("./Figures/MethodsFigures/ccdf_lambda{}.png".format(str(labda)))
+	# plt.title("log-log CCDF " + str(labda))
 	# plt.show()
 
 	return cdf_list

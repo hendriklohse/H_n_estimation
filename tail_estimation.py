@@ -1276,7 +1276,9 @@ def make_plots(ordered_data, output_file_path, labda, number_of_bins,
 
     # plot CCDF
     axes[0,1].set_xlabel(r"Degree $k$", fontsize = 20)
-    axes[0,1].set_ylabel(r"$\bar{F}(k)$", fontsize = 20)
+    axes[0,1].set_ylabel(r"CCDF$(k)$", fontsize = 20)
+    axes[0,1].yaxis.set_label_position("right")
+    # axes[0,1].yaxis.tick_right()
     axes[0,1].set_xscale("log")
     axes[0,1].set_yscale("log")
     axes[0,1].step(x_ccdf, y_ccdf, color = "#386cb0", lw = 1.5)
@@ -1332,6 +1334,8 @@ def make_plots(ordered_data, output_file_path, labda, number_of_bins,
                                    markerfacecolor = 'none', markeredgecolor = "#fdb462",
                                    markeredgewidth = 3, markersize = 10)
     axes[0,1].legend(loc = 'best')
+    extent = axes[0,1].get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+    fig.savefig(output_file_path[:len(output_file_path) - 4] + "subplot.pdf", bbox_inches=extent.expanded(1.3, 1.37))
 
     # define min and max order statistics to plot
     min_k = int(np.ceil(len(k_h_arr)**theta1)) - 1

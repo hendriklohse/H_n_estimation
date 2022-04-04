@@ -11,11 +11,11 @@ import numpy as np
 # from matplotlib import pyplot as plt
 # from collections import Counter
 # from collections import OrderedDict
-from sklearn.metrics import mean_squared_error
+# from sklearn.metrics import mean_squared_error
 
-from exactClusteringFunction import incompbeta, beta
+# from exactClusteringFunction import incompbeta, beta
 
-from create_girg import localClusteringCoefficient, makeBigClus
+from create_girg import makeBigClus
 # from calculate_H import create_H_n
 # from create_girg import zipfClustering
 # from sampling_H import sample_H
@@ -24,8 +24,6 @@ from retreive_xi import run_tail_estimation
 from sampling_CDF import sample_from_CDF
 # from getEstimates import get_estimates
 from calculate_H_2 import CDF
-
-
 
 
 # from sampling_H import simulate3
@@ -61,13 +59,18 @@ def run_all(n, nruns, ple, bigLocClus):
 	# H_n = create_H_n(clus_dict=locClus, dict_length=len(locClus.keys()), n=n, ple=ple)
 	if bigLocClus.get(n):
 		locClus = bigLocClus[n]
-		labdaList = [v/4 for v in range(5, 15)]
+		# labdaList = [v/7 for v in range(7, 28)]
+		labdaList = [1, 2, 3]
+		# labdaList= [2]
 		# k_c_list = [int(n**(1/(ple+(c/10)))) for c in range(10)]
-		k_c_list = [int(n**(1/(ple+1))), int(n**(1/(ple+0.5))), int(n**(1/(ple))), len(locClus.keys())]
-		# k_c_list = [len(locClus.keys())]
-		# k_c = len(locClus.keys())
-		print(k_c_list)
+		# k_c_list = [int(n**(1/(ple+1))), int(n**(1/(ple+0.5))), int(n**(1/(ple))), len(locClus.keys())]
+		k_c_list = [len(locClus.keys())]
+		# print(k_c_list)
 		results_k_c = []
+
+		cusum = {}
+		ccdf_samples = {}
+
 		for i in range(len(k_c_list)):
 			big_labdas_eta_dict[k_c_list[i]] = {}
 			big_labdas_rrms_dict[k_c_list[i]] = {}
@@ -78,11 +81,17 @@ def run_all(n, nruns, ple, bigLocClus):
 				print(big_labdas_eta_dict)
 				print(big_labdas_eta_dict[k_c_list[i]])
 				# sample_ = sample_H(dist=H_n, nruns=nruns)
-				sample_ = sample_from_CDF(H_n_CDF, nruns=nruns)
+				sample_ = sample_from_CDF(H_n_CDF, nruns=nruns, k_c = k_c_list[i], labda=labda)
+
+				# CALCULATE CDF
+
+				cusum[labda] = np.cumsum(list(zip(*sample_))[1])
+				cdf_samples = cusum[labda] / cusum[labda][-1]
+				ccdf_samples[labda] = [1-elt for elt in cdf_samples]
 
 				# run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c, testing=1)
 
-				estimates_dict = run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c_list[i], labda=labda, testing=1)
+				estimates_dict = run_tail_estimation(dimension=1, n=n, nruns=nruns, ple=ple, sample=sample_, k_c=k_c_list[i], labda=labda, testing=1, graphname=None)
 				rrms_estimates_dict = {"hill_ple": 10000, "moments_ple": 10000, "kernel_ple": 10000}
 				# print(estimates_dict)
 				if ple == 2.5:
@@ -168,35 +177,66 @@ def run_all(n, nruns, ple, bigLocClus):
 			# plt.legend()
 			# plt.savefig('./Figures/k_c/ple_{}_n{}_nruns{}.png'.format(str(ple), str(n), str(nruns)))
 			# plt.show()
+
+
+		# PLOT SAMPLED CCDF LOGLOG
+		fig = plt.figure(figsize=(5*1.618, 5*1))
+		ax = fig.add_subplot(1, 1, 1)
+		for labda in labdaList:
+			if labda == 1:
+				clr = "darkgray"
+			elif labda==2:
+				clr = "dimgrey"
+			else:
+				clr = "black"
+			plt.plot(ccdf_samples[labda], '.', color=clr, label=r"$\lambda = $" + str(labda))
+			ax.set_yscale('log')
+			ax.set_xscale('log')
+			ax.set_title('sampled loglog CCDF of H_n')
+			ax.legend()
+		plt.savefig('./Figures/CDFsampled_H_n_CCDF_loglog_ple{}_k_c{}_labda{}.png'.format(str(ple),str(k_c_list[i]),str(labda)))
+		plt.show()
+
+
 		print("labdas_eta_dict:")
 		print(big_labdas_eta_dict)
 
 		print("labdas_rrms_dict:")
 		print(big_labdas_rrms_dict)
 
-		for i in range(len(k_c_list)):
-			labdas_kernel_rrms_list = [v["kernel_ple"] for v in big_labdas_rrms_dict[k_c_list[i]].values()]
-			labdas_kernel_list = [k for k in big_labdas_rrms_dict[k_c_list[i]].keys()]
-			if i == 0:
-				label = r"$k_c=n^{1/(ple + 1)}$"
-			elif i == 1:
-				label = r"$k_c=n^{1/(ple + 1/2)}$"
-			elif i == 2:
-				label = r"$k_c=n^{1/ple}$"
-			elif i ==3:
-				label = r"$k_c = n$"
-			else:
-				print("length of k_c_list exceeds 4")
-				break
-			plt.plot(labdas_kernel_list, labdas_kernel_rrms_list, label=label)
-
-		plt.title("kernel estimator error for n = {}, nruns = {}, ple = {}".format(str(n), str(nruns), str(ple)))
-		plt.xlabel(r"$\lambda$")
-		plt.ylabel("RRMS")
-		plt.ylim(0,3)
-		plt.legend()
-		plt.savefig("./Figures/kernelPlots/error_n{}_nruns{}_ple{}.png".format(str(n), str(nruns), str(ple)))
-		plt.show()
+		# for i in range(len(k_c_list)):
+		#
+		# 	labdas_hill_rrms_list = [v["hill_ple"] for v in big_labdas_rrms_dict[k_c_list[i]].values()]
+		#
+		# 	labdas_moments_rrms_list = [v["moments_ple"] for v in big_labdas_rrms_dict[k_c_list[i]].values()]
+		#
+		# 	labdas_kernel_rrms_list = [v["kernel_ple"] for v in big_labdas_rrms_dict[k_c_list[i]].values()]
+		# 	labdas_list = [k for k in big_labdas_rrms_dict[k_c_list[i]].keys()]
+		#
+		# 	if i == 0:
+		# 		k_c_label = r"$k_c=n^{1/(ple+1)}$"
+		# 	elif i == 1:
+		# 		k_c_label = r"$k_c=n^{1/(ple+0.5)}$"
+		# 	elif i == 2:
+		# 		k_c_label = r"$k_c=n^{1/ple}$"
+		# 	elif i ==3:
+		# 		k_c_label = r"$k_c = k_{max}$"
+		# 	else:
+		# 		print("length of k_c_list exceeds 4")
+		# 		break
+		#
+		# 	fig = plt.figure(figsize=(5*1.618, 5*1))
+		# 	ax = fig.add_subplot(1, 1, 1)
+		# 	plt.plot(labdas_list, labdas_hill_rrms_list, label="Hill", color="firebrick", linestyle=(0, (5, 1)))
+		# 	plt.plot(labdas_list, labdas_moments_rrms_list, label="Moments", color="skyblue", linestyle="solid")
+		# 	plt.plot(labdas_list, labdas_kernel_rrms_list, label="Kernel", color="orange", linestyle=(0, (3, 1, 1, 1)))
+		# 	ax.set_title("Root MSE for n = {}, nruns = {}, ".format(str(n), str(nruns), str(ple)) + r"$\beta=$" + " {}, ".format(str(ple)) + k_c_label)
+		# 	ax.set_xlabel(r"$\lambda$")
+		# 	ax.set_ylabel("Root MSE")
+		# 	ax.set_ylim(0,1.5)
+		# 	ax.legend()
+		# 	fig.savefig("./Figures/simulationFigures/old_k_c/error_n{}_nruns{}_ple{}_k_c{}.png".format(str(n), str(nruns), str(ple),str(k_c_list[i])))
+		# 	plt.show()
 
 		return big_labdas_rrms_dict
 
@@ -206,5 +246,5 @@ def run_all(n, nruns, ple, bigLocClus):
 
 
 # NOTE: ple of both functions should be equal.
-bigLoc = makeBigClus(n_list=[200000], ple=2.6, nr_graphs=5)
-run_all(n=200000, nruns=100000, ple=2.6, bigLocClus=bigLoc)
+# bigLoc = makeBigClus(n_list=[300000], ple=2.6, nr_graphs=2)
+# run_all(n=300000, nruns=600000, ple=2.6, bigLocClus=bigLoc)

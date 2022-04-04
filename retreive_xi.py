@@ -6,7 +6,7 @@ import numpy as np
 # import tail_estimation
 
 
-def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, labda, testing):
+def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, labda, testing, graphname):
 	if testing == 1:
 		outputFile = "girg_" + str(dimension) + "D_" + str(n) + "n_" + str(nruns) + "nruns_" + str(ple) + "ple_" + str(k_c) + "_k_c" + str(labda) + "labda_" + ".dat"
 		#print('/output/' + outputFile)
@@ -52,6 +52,18 @@ def run_tail_estimation(dimension, n, nruns, ple, sample, k_c, labda, testing):
 		stream = os.popen(command)
 		output = stream.read()
 		print(output)
+	elif testing == 3:
+		outputFile = graphname + "_labda_" + str(labda) + ".dat"
+		#print('/output/' + outputFile)
+		plotFile = graphname + "_labda_" + str(labda) + ".pdf"
+		with open('./output/realworldNetworks/' + outputFile, 'w') as f:
+			for duo in sample[:k_c]:
+				f.write(str(duo[0]) + " " + str(duo[1]) + "\n")
+		command = 'python tail_estimation.py --verbose 0 --diagplots 0 ./output/realworldNetworks/' + outputFile + ' ./plots/realworldNetworks/' + plotFile + " " + str(labda)
+		os.system(command)
+		res_dict_read = np.load('./result_dicts/res_dict.npy', allow_pickle=True).item()
+		return res_dict_read
+
 
 
 
